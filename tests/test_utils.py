@@ -24,6 +24,7 @@ def test_goodreads_url(url: str, expected: bool):
         ("not a url", False),
         ("https://www.goodreads.com/user/show/1", True),
         ("https://www.goodreads.com/user/show/300", True),
+        ("https://www.goodreads.com/review/list/300?shelf=read", False),
     ],
 )
 def test_profile_url(url: str, expected: bool):
