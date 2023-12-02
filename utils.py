@@ -1,5 +1,6 @@
 from validators.url import url as url_validator
 import re
+from urllib.parse import urlparse, urlunparse, ParseResult
 
 
 def is_valid_goodreads_url(url: str) -> bool:
@@ -31,3 +32,36 @@ def is_goodreads_profile(url: str) -> bool:
     # A URL is a profile if it's a valid Goodreads URL and follows the Regex for having user/show/{USER_ID}
     pattern = r"^https:\/\/www\.goodreads\.com\/user\/show\/\d+$"
     return bool(re.match(pattern, url)) and is_valid_goodreads_url(url)
+
+
+def create_shelf_url(profile_url: str) -> str:
+    """From a valid GR profile url, get the read shelf URL.
+    Although this does work starting from the read shelf itself, it's better to just always use it with the user's profile.
+    Some shelves will add the username to the URL itself, making this not ideal to work with. Keep it simple for now.
+
+    Args:
+        profile_url (str): A valid GR profile URL.
+
+    Returns:
+        str: The URL for that GR user's shelf of read books.
+    """
+    # Parse the profile URL
+    parsed_url = urlparse(profile_url)
+
+    # Construct the path for the read shelf URL
+    user_id = parsed_url.path.split("/")[-1]
+    new_path = f"/review/list/{user_id}"
+
+    # Construct the new URL
+    read_shelf_url = urlunparse(
+        ParseResult(
+            scheme=parsed_url.scheme,  # Https
+            netloc=parsed_url.netloc,  # The goodreads site
+            path=new_path,  # The review list for that user
+            params="",
+            query="shelf=read",
+            fragment="",
+        )
+    )
+
+    return read_shelf_url

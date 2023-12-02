@@ -1,4 +1,4 @@
-from utils import is_valid_goodreads_url, is_goodreads_profile
+from utils import is_valid_goodreads_url, is_goodreads_profile, create_shelf_url
 import pytest
 
 
@@ -29,3 +29,24 @@ def test_goodreads_url(url: str, expected: bool):
 )
 def test_profile_url(url: str, expected: bool):
     assert is_goodreads_profile(url) == expected
+
+
+@pytest.mark.parametrize(
+    "profile_url,expected",
+    [
+        (
+            "https://www.goodreads.com/user/show/1",
+            "https://www.goodreads.com/review/list/1?shelf=read",
+        ),
+        (
+            "https://www.goodreads.com/user/show/300",
+            "https://www.goodreads.com/review/list/300?shelf=read",
+        ),
+        (
+            "https://www.goodreads.com/user/show/100",
+            "https://www.goodreads.com/review/list/100?shelf=read",
+        ),
+    ],
+)
+def test_read_shelf_fetch(profile_url: str, expected: str):
+    assert create_shelf_url(profile_url=profile_url) == expected
