@@ -16,3 +16,7 @@ def is_valid_goodreads_url(url: str) -> bool:
     ):
         return True
     return False
+
+
+def is_goodreads_profile(url: str) -> bool:
+    pass
