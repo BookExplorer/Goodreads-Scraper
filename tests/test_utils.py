@@ -1,4 +1,4 @@
-from utils import is_valid_goodreads_url, is_goodreads_profile, create_shelf_url
+from utils.utils import is_valid_goodreads_url, is_goodreads_profile, create_shelf_url
 import pytest
 
 
