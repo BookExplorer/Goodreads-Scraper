@@ -13,6 +13,7 @@ ipykernel = "^6.27.1"
 
 [tool.poetry.group.dev.dependencies]
 mypy = "^1.7.1"
+pytest = "^7.4.3"
 
 [build-system]
 requires = ["poetry-core"]
