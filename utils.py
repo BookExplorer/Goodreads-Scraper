@@ -1,2 +1,2 @@
-def validate_goodreads_url(url: str):
+def is_valid_goodreads_url(url: str):
     pass
