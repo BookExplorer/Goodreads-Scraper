@@ -36,14 +36,15 @@ while True:
     if current_books >= remaining_books:
         break
 
-# Now you can scrape the loaded content
-# Use browser.page_source to get the HTML content
-# ...
+books = browser.find_elements(By.CLASS_NAME, "bookalike")
 
-# Don't forget to close the browser once done
+# Example:
+book = books[0]
+book.find_element(By.CSS_SELECTOR, "td.field.title").text  # Gets you the book title
+# field isbn, field isbn13
+# TODO: Actually get author's link and unique ID?
+isbn_div = book.find_element(By.CSS_SELECTOR, "td.field.isbn div.value")
+isbn = browser.execute_script("return arguments[0].textContent.trim();", isbn_div)
 browser.quit()
-# soup = BeautifulSoup(response.content, "html.parser")
-# table = soup.find("table", id="books")
-# tbody = table.find("tbody", id="booksBody")
-# infinite_status = soup.find(id="infiniteStatus")
+
 print(2)
