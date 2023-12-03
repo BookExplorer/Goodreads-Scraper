@@ -11,6 +11,7 @@ requests = "^2.31.0"
 beautifulsoup4 = "^4.12.2"
 ipykernel = "^6.27.1"
 validators = "^0.22.0"
+selenium = "^4.15.2"
 
 [tool.poetry.group.dev.dependencies]
 mypy = "^1.7.1"
