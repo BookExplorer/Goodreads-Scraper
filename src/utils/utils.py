@@ -70,7 +70,9 @@ def create_shelf_url(profile_url: str) -> str:
     return read_shelf_url
 
 
-def extract_hidden_td(browser: WebDriver, element: WebElement, css_selector: str):
+def extract_hidden_td(
+    browser: WebDriver, element: WebElement, css_selector: str
+) -> str:
     hidden_td_element = element.find_element(By.CSS_SELECTOR, css_selector)
     hidden_td_value = browser.execute_script(
         "return arguments[0].textContent.trim();", hidden_td_element
