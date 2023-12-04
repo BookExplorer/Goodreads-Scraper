@@ -5,7 +5,7 @@ from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.common.by import By
 from math import ceil
 import time
-from utils.utils import extract_hidden_td
+from src.utils.utils import extract_hidden_td
 
 from selenium.webdriver.support.ui import WebDriverWait
 
