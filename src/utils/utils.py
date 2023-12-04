@@ -94,6 +94,14 @@ def extract_hidden_td(
 
 
 def extract_author_id(author_url: str) -> str:
+    """Extracts Author ID from GR author URL.
+
+    Args:
+        author_url (str): URL from an author in Goodreads.
+
+    Returns:
+        str: ID to uniquely identify the author in GR.
+    """
     author_path = urlparse(author_url).path
     author_id = author_path.split("/")[-1].split(".")[0]
     return author_id
