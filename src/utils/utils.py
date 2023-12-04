@@ -91,3 +91,9 @@ def extract_hidden_td(
         "return arguments[0].textContent.trim();", hidden_td_element
     )
     return hidden_td_value
+
+
+def extract_author_id(author_url: str) -> str:
+    author_path = urlparse(author_url).path
+    author_id = author_path.split("/")[-1].split(".")[0]
+    return author_id

@@ -3,6 +3,7 @@ from src.utils.utils import (
     is_goodreads_profile,
     create_shelf_url,
     extract_hidden_td,
+    extract_author_id,
 )
 import pytest
 import requests
@@ -99,3 +100,19 @@ def test_extract_hidden_td(chrome_browser):
 
     # Assert the hidden text is what you expect
     assert hidden_text == "Hidden Text"
+
+
+@pytest.mark.parametrize(
+    "url, expected_id",
+    [
+        ("https://www.goodreads.com/author/show/12345.J.K.Rowling", "12345"),
+        ("https://www.goodreads.com/author/show/67890.George_Orwell", "67890"),
+        (
+            "https://www.goodreads.com/author/show/13579.Author-Name-With-Dashes",
+            "13579",
+        ),
+        ("https://www.goodreads.com/author/show/24680", "24680"),
+    ],
+)
+def test_extract_author_id(url, expected_id):
+    assert extract_author_id(url) == expected_id
