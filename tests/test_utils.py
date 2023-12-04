@@ -1,10 +1,21 @@
-from utils.utils import (
+from src.utils.utils import (
     is_valid_goodreads_url,
     is_goodreads_profile,
     create_shelf_url,
     extract_hidden_td,
 )
 import pytest
+import requests
+from bs4 import BeautifulSoup
+from selenium import webdriver
+from selenium.webdriver.common.keys import Keys
+from selenium.webdriver.common.by import By
+from math import ceil
+import os
+from src.utils.utils import extract_hidden_td
+
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
 
 
 @pytest.mark.parametrize(
@@ -57,5 +68,34 @@ def test_read_shelf_fetch(profile_url: str, expected: str):
     assert create_shelf_url(profile_url=profile_url) == expected
 
 
-def test_hidden_element_extraction():
-    pass
+# Fixture to initialize WebDriver
+@pytest.fixture
+def chrome_browser():
+    driver = webdriver.Chrome()
+    yield driver
+    driver.quit()
+
+
+# Test function
+def test_extract_hidden_td(chrome_browser):
+    # Replace with the actual path to your test HTML file
+    current_script_dir = os.path.dirname(os.path.realpath(__file__))
+
+    # Construct the relative path to the HTML file
+    relative_path = os.path.join(current_script_dir, "test_assets/test_page.html")
+    # Create the file URL
+    file_path = f"file://{relative_path}"
+    chrome_browser.get(file_path)
+
+    # Wait for the table to be present
+    wait = WebDriverWait(chrome_browser, 10)
+    table = wait.until(EC.presence_of_element_located((By.TAG_NAME, "table")))
+
+    # Find the first 'tr' element in the table
+    row = chrome_browser.find_element(By.CSS_SELECTOR, "tr")
+
+    # Call the utility function with the appropriate CSS selector for the hidden 'td'
+    hidden_text = extract_hidden_td(chrome_browser, row, "td.hidden")
+
+    # Assert the hidden text is what you expect
+    assert hidden_text == "Hidden Text"
