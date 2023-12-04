@@ -73,6 +73,19 @@ def create_shelf_url(profile_url: str) -> str:
 def extract_hidden_td(
     browser: WebDriver, element: WebElement, css_selector: str
 ) -> str:
+    """Extracts hidden content from an element inside another element in the HTML.
+    We use this because the shelf is essentially a bunch of rows of class bookalike review.
+    Every row has multiple td.field.field_name classes with that row's info.
+    However, some of these are hidden and have nested within them a div.value with none display containing the info.
+
+    Args:
+        browser (WebDriver): Browser being used by Selenium to scrape.
+        element (WebElement): The actual book element which contains the fields with info.
+        css_selector (str): The CSS selector method to find the nested div with hidden info.
+
+    Returns:
+        str: The extracted value for that desired field.
+    """
     hidden_td_element = element.find_element(By.CSS_SELECTOR, css_selector)
     hidden_td_value = browser.execute_script(
         "return arguments[0].textContent.trim();", hidden_td_element
