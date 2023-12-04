@@ -5,6 +5,7 @@ from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.common.by import By
 from math import ceil
 import time
+from utils.utils import extract_hidden_td
 
 from selenium.webdriver.support.ui import WebDriverWait
 
@@ -43,8 +44,11 @@ book = books[0]
 book.find_element(By.CSS_SELECTOR, "td.field.title").text  # Gets you the book title
 # field isbn, field isbn13
 # TODO: Actually get author's link and unique ID?
+extracted_isbn = extract_hidden_td(browser, book, "td.field.isbn div.value")
 isbn_div = book.find_element(By.CSS_SELECTOR, "td.field.isbn div.value")
 isbn = browser.execute_script("return arguments[0].textContent.trim();", isbn_div)
+print(extracted_isbn)
+print(isbn)
 browser.quit()
 
 print(2)

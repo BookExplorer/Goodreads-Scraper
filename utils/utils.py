@@ -1,6 +1,9 @@
 from validators.url import url as url_validator
+from selenium.webdriver.chrome.webdriver import WebDriver
 import re
+from selenium.webdriver.common.by import By
 from urllib.parse import urlparse, urlunparse, ParseResult
+from selenium.webdriver.remote.webelement import WebElement
 
 
 def is_valid_goodreads_url(url: str) -> bool:
@@ -65,3 +68,11 @@ def create_shelf_url(profile_url: str) -> str:
     )
 
     return read_shelf_url
+
+
+def extract_hidden_td(browser: WebDriver, element: WebElement, css_selector: str):
+    hidden_td_element = element.find_element(By.CSS_SELECTOR, css_selector)
+    hidden_td_value = browser.execute_script(
+        "return arguments[0].textContent.trim();", hidden_td_element
+    )
+    return hidden_td_value
