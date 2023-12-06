@@ -3,6 +3,7 @@ from selenium.webdriver.chrome.webdriver import WebDriver
 import re
 from selenium.webdriver.common.by import By
 from urllib.parse import urlparse, urlunparse, ParseResult
+from typing import Dict
 from selenium.webdriver.remote.webelement import WebElement
 
 
@@ -105,3 +106,22 @@ def extract_author_id(author_url: str) -> str:
     author_path = urlparse(author_url).path
     author_id = author_path.split("/")[-1].split(".")[0]
     return author_id
+
+
+def process_book(browser: WebDriver, book: WebElement) -> Dict[str, str]:
+    isbn = extract_hidden_td(browser, book, "td.field.isbn div.value")
+    isbn13 = extract_hidden_td(browser, book, "td.field.isbn13 div.value")
+    title = book.find_element(By.CSS_SELECTOR, "td.field.title").text
+    author_info = book.find_element(By.CSS_SELECTOR, "td.field.author div.value a")
+    author_name = author_info.text
+    author_link = author_info.get_attribute("href")
+    author_id = extract_author_id(author_link)
+    author_dict = {
+        "title": title,
+        "isbn": isbn,
+        "isbn13": isbn13,
+        "author_name": author_name,
+        "author_id": author_id,
+        "author_link": author_link,
+    }
+    return author_dict

@@ -5,7 +5,7 @@ from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.common.by import By
 from math import ceil
 import time
-from src.utils.utils import extract_hidden_td
+from src.utils.utils import extract_hidden_td, extract_author_id, process_book
 
 from selenium.webdriver.support.ui import WebDriverWait
 
@@ -23,7 +23,6 @@ time.sleep(2)  # Wait after click to allow any actions to complete
 while True:
     # Scroll down
     browser.find_element(By.TAG_NAME, "body").send_keys(Keys.END)
-    time.sleep(2)  # Adjust this delay as needed
 
     # Get updated status
     infinite_status = browser.find_element(By.ID, "infiniteStatus")
@@ -41,14 +40,19 @@ books = browser.find_elements(By.CLASS_NAME, "bookalike")
 
 # Example:
 book = books[0]
-book.find_element(By.CSS_SELECTOR, "td.field.title").text  # Gets you the book title
+
+title = book.find_element(
+    By.CSS_SELECTOR, "td.field.title"
+).text  # Gets you the book title
 # field isbn, field isbn13
-# TODO: Actually get author's link and unique ID?
+author_link = book.find_element(By.CSS_SELECTOR, "td.field.author div.value a")
+
+author_id = extract_author_id(author_link)
 extracted_isbn = extract_hidden_td(browser, book, "td.field.isbn div.value")
 isbn_div = book.find_element(By.CSS_SELECTOR, "td.field.isbn div.value")
 isbn = browser.execute_script("return arguments[0].textContent.trim();", isbn_div)
-print(extracted_isbn)
-print(isbn)
+print(process_book(browser, book))
+
 browser.quit()
 
 print(2)
