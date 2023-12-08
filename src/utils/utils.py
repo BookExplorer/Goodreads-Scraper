@@ -17,7 +17,7 @@ def is_valid_goodreads_url(url: str) -> bool:
         bool: True if it's a valid GR URL, False otherwise.
     """
     if url_validator(url) and re.match(
-        pattern=r"https?://www\.goodreads\.com/.*", string=url
+        pattern=r"https?://www\.goodreads\.com/.*", string=url, flags=re.IGNORECASE
     ):
         return True
     return False
