@@ -109,6 +109,16 @@ def extract_author_id(author_url: str) -> str:
 
 
 def process_book(browser: WebDriver, book: WebElement) -> Dict[str, str]:
+    """Given a web element from the Goodreads' user's shelf, scrapes the book information and returns a dict.
+
+
+    Args:
+        browser (WebDriver): Browser being used by Selenium to scrape.
+        element (WebElement): The actual book element which contains the fields with info.
+
+    Returns:
+        Dict[str, str]: Dictionary with that book's ISBN, ISBN13, title, and author info.
+    """
     isbn = extract_hidden_td(browser, book, "td.field.isbn div.value")
     isbn13 = extract_hidden_td(browser, book, "td.field.isbn13 div.value")
     title = book.find_element(By.CSS_SELECTOR, "td.field.title").text
@@ -116,7 +126,7 @@ def process_book(browser: WebDriver, book: WebElement) -> Dict[str, str]:
     author_name = author_info.text
     author_link = author_info.get_attribute("href")
     author_id = extract_author_id(author_link)
-    author_dict = {
+    book_dict = {
         "title": title,
         "isbn": isbn,
         "isbn13": isbn13,
@@ -124,4 +134,4 @@ def process_book(browser: WebDriver, book: WebElement) -> Dict[str, str]:
         "author_id": author_id,
         "author_link": author_link,
     }
-    return author_dict
+    return book_dict
