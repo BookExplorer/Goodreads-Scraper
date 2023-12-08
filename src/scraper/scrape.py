@@ -41,16 +41,7 @@ books = browser.find_elements(By.CLASS_NAME, "bookalike")
 # Example:
 book = books[0]
 
-title = book.find_element(
-    By.CSS_SELECTOR, "td.field.title"
-).text  # Gets you the book title
-# field isbn, field isbn13
-author_link = book.find_element(By.CSS_SELECTOR, "td.field.author div.value a")
 
-author_id = extract_author_id(author_link)
-extracted_isbn = extract_hidden_td(browser, book, "td.field.isbn div.value")
-isbn_div = book.find_element(By.CSS_SELECTOR, "td.field.isbn div.value")
-isbn = browser.execute_script("return arguments[0].textContent.trim();", isbn_div)
 print(process_book(browser, book))
 
 browser.quit()
