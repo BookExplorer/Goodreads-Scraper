@@ -27,6 +27,14 @@ from selenium.webdriver.support import expected_conditions as EC
         ("not a url", False),
         ("https://www.goodreads.com/user/show/1", True),
         ("https://www.goodreads.com/user/show/300", True),
+        ("https://www.goodreads.com/book/show/12345?ref=example", True),
+        ("https://www.goodreads.com/user/show/300#section", True),
+        ("https://subdomain.goodreads.com/user/show/1", True),
+        ("https://www.GoodReads.com/user/show/1", True),
+        ("https:/www.goodreads.com/user/show/1", False),
+        ("https:// goodreads.com/user/show/1", False),
+        ("https://www.goodreads.co/user/show/1", False),
+        ("https://www.goodreads.com/user/1", False),
     ],
 )
 def test_goodreads_url(url: str, expected: bool):
@@ -42,6 +50,14 @@ def test_goodreads_url(url: str, expected: bool):
         ("https://www.goodreads.com/user/show/1", True),
         ("https://www.goodreads.com/user/show/300", True),
         ("https://www.goodreads.com/review/list/300?shelf=read", False),
+        ("https://www.goodreads.com/user/show/1?param=value", True),
+        ("https://www.goodreads.com/user/show/", False),
+        ("https://www.goodreads.com/user", False),
+        ("https://profile.goodreads.com/user/show/1", True),
+        ("https://www.goodreads.com/user/show/1#details", True),
+        ("https:/www.goodreads.com/user/show/1", False),
+        ("https://www.goodreads.com/user/show/1 with space", False),
+        ("https://www.goodreads.com/user/show/abc", False),
     ],
 )
 def test_profile_url(url: str, expected: bool):
