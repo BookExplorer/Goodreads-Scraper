@@ -1,4 +1,4 @@
-from validators.url import url as url_validator
+from validators import url as url_validator
 from selenium.webdriver.chrome.webdriver import WebDriver
 import re
 from selenium.webdriver.common.by import By
