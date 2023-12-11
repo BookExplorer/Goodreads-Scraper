@@ -3,7 +3,7 @@ from selenium.webdriver.chrome.webdriver import WebDriver
 import re
 from selenium.webdriver.common.by import By
 from urllib.parse import urlparse, urlunparse, ParseResult
-from typing import Dict
+from typing import Dict, Tuple
 from selenium.webdriver.remote.webelement import WebElement
 
 
@@ -135,3 +135,10 @@ def process_book(browser: WebDriver, book: WebElement) -> Dict[str, str]:
         "author_link": author_link,
     }
     return book_dict
+
+
+def parse_infinite_status(infinite_status: WebElement) -> Tuple[int, int]:
+    infinite_status_text = infinite_status.text.split(" ")
+    remaining_books = int(infinite_status_text[2])
+    current_books = int(infinite_status_text[0])
+    return current_books, remaining_books
