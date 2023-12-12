@@ -21,7 +21,7 @@ URL = "https://www.goodreads.com/review/list/71341746?shelf=read"
 
 def scrape_shelf(url: str):
     browser = webdriver.Chrome()
-    browser.get(URL)
+    browser.get(url)
 
     # Wait for initial load
     WebDriverWait(browser, 10)
