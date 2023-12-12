@@ -44,10 +44,9 @@ infinite_status = WebDriverWait(browser, 5).until(
 )
 current_books, remaining_books = parse_infinite_status(infinite_status)
 body = browser.find_element(By.TAG_NAME, "body")
-while current_books <= remaining_books:
+while current_books < remaining_books:
     # Scroll down
     body.send_keys(Keys.END)
-
     # Get updated status
     WebDriverWait(browser, 10).until(
         lambda x: len(x.find_elements(By.CLASS_NAME, "bookalike")) > current_books
@@ -59,7 +58,6 @@ while current_books <= remaining_books:
 
 
 books = browser.find_elements(By.CLASS_NAME, "bookalike")
-
 # Example:
 book = books[0]
 
