@@ -3,7 +3,7 @@ from selenium.webdriver.chrome.webdriver import WebDriver
 import re
 from selenium.webdriver.common.by import By
 from urllib.parse import urlparse, urlunparse, ParseResult
-from typing import Dict, Tuple
+from typing import Dict, Tuple, Union
 from selenium.webdriver.remote.webelement import WebElement
 
 
@@ -108,14 +108,22 @@ def extract_author_id(author_url: str) -> str:
     return author_id
 
 
-def extract_num_pages(page_string: str):
+def extract_num_pages(page_string: str) -> Union[int, None]:
+    """Parses the webelement with the number of pages in a book into an actual number.
+
+    Args:
+        page_string (str): The string extracted from the WebElement with the number of pages.
+
+    Returns:
+        Union[int, None]: Number of pages if possible.
+    """
     parts = page_string.split()
     for p in parts:
         if p.isdigit():
             return int(p)
 
 
-def process_book(browser: WebDriver, book: WebElement) -> Dict[str, str]:
+def process_book(browser: WebDriver, book: WebElement) -> Dict[str, any]:
     """Given a web element from the Goodreads' user's shelf, scrapes the book information and returns a dict.
 
 
@@ -124,7 +132,7 @@ def process_book(browser: WebDriver, book: WebElement) -> Dict[str, str]:
         element (WebElement): The actual book element which contains the fields with info.
 
     Returns:
-        Dict[str, str]: Dictionary with that book's ISBN, ISBN13, user rating, average rating, title, and author info.
+        Dict[str, any]: Dictionary with that book's fields of interest.
     """
     isbn = extract_hidden_td(browser, book, "td.field.isbn div.value")
     isbn13 = extract_hidden_td(browser, book, "td.field.isbn13 div.value")
@@ -141,11 +149,10 @@ def process_book(browser: WebDriver, book: WebElement) -> Dict[str, str]:
     ).text  # TODO: Match this to number of stars, it's an enum.
     pages_string = extract_hidden_td(browser, book, "td.field.num_pages")
     num_pages = extract_num_pages(pages_string)
-    publishing_date = extract_hidden_td(browser, book, "td.field.date_pub").split(
-        "   "
-    )[
-        -1
-    ]  # This is how the string comes.
+    publishing_date = extract_hidden_td(browser, book, "td.field.date_pub > div.value")
+    started_date = extract_hidden_td(browser, book, "td.field.date_started > div.value")
+    finished_date = extract_hidden_td(browser, book, "td.field.date_read > div.value")
+    added_date = extract_hidden_td(browser, book, "td.field.date_added > div.value")
     book_dict = {
         "title": title,
         "isbn": isbn,
@@ -157,11 +164,25 @@ def process_book(browser: WebDriver, book: WebElement) -> Dict[str, str]:
         "user_rating": user_rating,
         "num_pages": num_pages,
         "publishing_date": publishing_date,
+        "started_date": started_date,
+        "finished_date": finished_date,
+        "added_date": added_date,
     }
     return book_dict
 
 
 def parse_infinite_status(infinite_status: WebElement) -> Tuple[int, int]:
+    """Every shelf, when opened in the default mode, loads only a few books but has infinite scrolling enabled.
+    There is a WebElement inside that page that gives the status of how many books are loaded, as in 30 of 321 loaded.
+    This function serves to parse this in order to facilitate scrolling until the shelf is fully loaded.
+
+
+    Args:
+        infinite_status (WebElement): WebElement with the infinite status text.
+
+    Returns:
+        Tuple[int, int]: Number of books currently loaded, number of total books in that shelf.
+    """
     infinite_status_text = infinite_status.text.split(" ")
     remaining_books = int(infinite_status_text[2])
     current_books = int(infinite_status_text[0])
