@@ -108,6 +108,13 @@ def extract_author_id(author_url: str) -> str:
     return author_id
 
 
+def extract_num_pages(page_string: str):
+    parts = page_string.split()
+    for p in parts:
+        if p.isdigit():
+            return int(p)
+
+
 def process_book(browser: WebDriver, book: WebElement) -> Dict[str, str]:
     """Given a web element from the Goodreads' user's shelf, scrapes the book information and returns a dict.
 
@@ -117,15 +124,28 @@ def process_book(browser: WebDriver, book: WebElement) -> Dict[str, str]:
         element (WebElement): The actual book element which contains the fields with info.
 
     Returns:
-        Dict[str, str]: Dictionary with that book's ISBN, ISBN13, title, and author info.
+        Dict[str, str]: Dictionary with that book's ISBN, ISBN13, user rating, average rating, title, and author info.
     """
     isbn = extract_hidden_td(browser, book, "td.field.isbn div.value")
     isbn13 = extract_hidden_td(browser, book, "td.field.isbn13 div.value")
     title = book.find_element(By.CSS_SELECTOR, "td.field.title").text
     author_info = book.find_element(By.CSS_SELECTOR, "td.field.author div.value a")
-    author_name = author_info.text
+    author_name = (
+        author_info.text
+    )  # TODO: Invert this so it follows an actual naming order rather than surname, name
     author_link = author_info.get_attribute("href")
-    author_id = extract_author_id(author_link)
+    author_id = int(extract_author_id(author_link))
+    avg_rating = float(book.find_element(By.CSS_SELECTOR, "td.field.avg_rating").text)
+    user_rating = book.find_element(
+        By.CSS_SELECTOR, "td.field.rating"
+    ).text  # TODO: Match this to number of stars, it's an enum.
+    pages_string = extract_hidden_td(browser, book, "td.field.num_pages")
+    num_pages = extract_num_pages(pages_string)
+    publishing_date = extract_hidden_td(browser, book, "td.field.date_pub").split(
+        "   "
+    )[
+        -1
+    ]  # This is how the string comes.
     book_dict = {
         "title": title,
         "isbn": isbn,
@@ -133,6 +153,10 @@ def process_book(browser: WebDriver, book: WebElement) -> Dict[str, str]:
         "author_name": author_name,
         "author_id": author_id,
         "author_link": author_link,
+        "avg_rating": avg_rating,
+        "user_rating": user_rating,
+        "num_pages": num_pages,
+        "publishing_date": publishing_date,
     }
     return book_dict
 
