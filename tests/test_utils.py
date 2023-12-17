@@ -6,12 +6,8 @@ from src.utils.utils import (
     extract_author_id,
 )
 import pytest
-import requests
-from bs4 import BeautifulSoup
 from selenium import webdriver
-from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.common.by import By
-from math import ceil
 import os
 from src.utils.utils import extract_hidden_td
 
