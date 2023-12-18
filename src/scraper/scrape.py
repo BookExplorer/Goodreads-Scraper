@@ -1,13 +1,7 @@
-import requests
-from bs4 import BeautifulSoup
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.common.by import By
-from math import ceil, inf
-import time
 from src.utils.utils import (
-    extract_hidden_td,
-    extract_author_id,
     process_book,
     parse_infinite_status,
 )
