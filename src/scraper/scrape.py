@@ -8,13 +8,16 @@ from src.utils.utils import (
 
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
-
+from selenium.webdriver.chrome.options import Options
 
 URL = "https://www.goodreads.com/review/list/71341746?shelf=read"
 
 
 def scrape_shelf(url: str):
-    browser = webdriver.Chrome()
+    chrome_options = Options()
+    chrome_options.add_argument("--headless")
+    chrome_options.add_argument("--window-size=1920,1080")
+    browser = webdriver.Chrome(options=chrome_options)
     browser.get(url)
 
     # Wait for initial load
