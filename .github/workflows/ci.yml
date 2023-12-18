@@ -26,5 +26,10 @@ jobs:
       - name: Install dependencies
         run: poetry install
 
+      - name: Set up headless Chrome
+        uses: browser-actions/setup-chrome@v1
+        with:
+          chrome-version: "latest" # Use the latest stable version of Chrome
+
       - name: Run tests
         run: poetry run pytest
