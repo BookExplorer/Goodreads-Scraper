@@ -13,6 +13,7 @@ from src.utils.utils import extract_hidden_td
 
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.chrome.options import Options
 
 
 @pytest.mark.parametrize(
@@ -84,7 +85,10 @@ def test_read_shelf_fetch(profile_url: str, expected: str):
 # Fixture to initialize WebDriver
 @pytest.fixture
 def chrome_browser():
-    driver = webdriver.Chrome()
+    chrome_options = Options()
+    chrome_options.add_argument("--headless")
+    chrome_options.add_argument("--window-size=1920,1080")
+    driver = webdriver.Chrome(options=chrome_options)
     yield driver
     driver.quit()
 

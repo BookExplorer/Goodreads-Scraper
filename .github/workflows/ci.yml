@@ -1,4 +1,4 @@
-name: Python application test
+name: Runs all tests
 
 on:
   push:
