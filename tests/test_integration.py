@@ -45,6 +45,7 @@ def test_scrape_live_shelf():
 
 @pytest.mark.integration
 def test_scrape_saved_shelf(goodreads_html):
+    print(pathname2url(str(fixture_path)))
     actual_results = scrape_shelf(pathname2url(str(fixture_path)))
 
     # Check if the number of books matches the expectation
