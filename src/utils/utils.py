@@ -143,7 +143,9 @@ def process_book(browser: WebDriver, book: WebElement) -> Dict[str, any]:
     )  # TODO: Invert this so it follows an actual naming order rather than surname, name
     author_link = author_info.get_attribute("href")
     author_id = int(extract_author_id(author_link))
-    avg_rating = float(book.find_element(By.CSS_SELECTOR, "td.field.avg_rating").text)
+    avg_rating = float(
+        extract_hidden_td(browser, book, "td.field.avg_rating > div.value")
+    )
     user_rating = book.find_element(
         By.CSS_SELECTOR, "td.field.rating"
     ).text  # TODO: Match this to number of stars, it's an enum.
