@@ -4,9 +4,7 @@ from pathlib import Path
 from urllib.request import pathname2url
 
 # Define the path to your fixture
-fixture_path = (
-    Path(__file__).parent.joinpath("test_assets", "example_goodreads.html").resolve()
-)
+fixture_path = Path(__file__).parent.joinpath("test_assets", "example_goodreads.html")
 
 
 @pytest.fixture
@@ -44,9 +42,11 @@ def test_scrape_live_shelf():
 
 
 @pytest.mark.integration
-def test_scrape_saved_shelf(goodreads_html):
-    print(pathname2url(str(fixture_path)))
-    actual_results = scrape_shelf(pathname2url(str(fixture_path)))
+def test_scrape_saved_shelf():
+    file_uri = fixture_path.resolve().as_uri()
+
+    # Call scrape_shelf with the file URI
+    actual_results = scrape_shelf(file_uri)
 
     # Check if the number of books matches the expectation
     assert len(actual_results) == EXPECTED_RESULTS["number_of_books"]
