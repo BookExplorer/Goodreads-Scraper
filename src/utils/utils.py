@@ -7,6 +7,15 @@ from typing import Dict, Tuple, Union
 from selenium.webdriver.remote.webelement import WebElement
 
 
+STARS_ENUM = {
+    "did not like it": 1,
+    "it was ok": 2,
+    "liked it": 3,
+    "really liked it": 4,
+    "it was amazing": 5,
+}
+
+
 def is_valid_goodreads_url(url: str) -> bool:
     """Validates if a URL is a proper URL from the Goodreads website.
 
@@ -140,15 +149,14 @@ def process_book(browser: WebDriver, book: WebElement) -> Dict[str, any]:
     author_info = book.find_element(By.CSS_SELECTOR, "td.field.author div.value a")
     author_name = (
         author_info.text
-    )  # TODO: Invert this so it follows an actual naming order rather than surname, name
+    )  # TODO: Get author's name from page. Might be better.
     author_link = author_info.get_attribute("href")
     author_id = int(extract_author_id(author_link))
     avg_rating = float(
         extract_hidden_td(browser, book, "td.field.avg_rating > div.value")
     )
-    user_rating = book.find_element(
-        By.CSS_SELECTOR, "td.field.rating"
-    ).text  # TODO: Match this to number of stars, it's an enum.
+    user_stars = book.find_element(By.CSS_SELECTOR, "td.field.rating").text
+    user_rating = STARS_ENUM[user_stars]
     pages_string = extract_hidden_td(browser, book, "td.field.num_pages")
     num_pages = extract_num_pages(pages_string)
     publishing_date = extract_hidden_td(browser, book, "td.field.date_pub > div.value")
