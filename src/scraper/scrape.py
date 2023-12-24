@@ -21,7 +21,9 @@ def scrape_shelf(url: str):
     browser.get(url)
 
     # Wait for initial load
-    WebDriverWait(browser, 10)
+    WebDriverWait(browser, 10).until(
+        EC.presence_of_element_located((By.TAG_NAME, body))
+    )
     # Clicks to remove login popup.
     webdriver.ActionChains(browser).move_by_offset(10, 100).click().perform()
     # Wait for the infinite status
