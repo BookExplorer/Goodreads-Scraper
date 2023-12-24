@@ -3,7 +3,6 @@ from src.scraper.scrape import scrape_shelf
 from pathlib import Path
 from urllib.request import pathname2url
 
-# Define the path to your fixture
 fixture_path = Path(__file__).parent.joinpath("test_assets", "example_goodreads.html")
 
 
@@ -14,12 +13,11 @@ def goodreads_html():
         return file.read()
 
 
-# The known URL you're testing against
 TEST_URL = "https://www.goodreads.com/review/list/71341746?shelf=quarantine"
 
-# The expected results, which you have determined beforehand
+
 EXPECTED_RESULTS = {
-    "number_of_books": 13,  # Replace with the actual expected number of books
+    "number_of_books": 13,
     "known_titles": [
         "Dom Quixote",
         "Iracema",
