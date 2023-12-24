@@ -17,7 +17,7 @@ def scrape_shelf(url: str):
     chrome_options = Options()
     chrome_options.add_argument("--headless")
     chrome_options.add_argument("--window-size=1920,1080")
-    browser = webdriver.Chrome(options=chrome_options)
+    browser = webdriver.Chrome(options=chrome_options)  # TODO: This is a util.
     browser.get(url)
 
     # Wait for initial load
@@ -32,6 +32,7 @@ def scrape_shelf(url: str):
     )
     current_books, remaining_books = parse_infinite_status(infinite_status)
     while current_books < remaining_books:
+        # TODO: This scrolling stuff? That's a function.
         # Scroll down
         body.send_keys(Keys.END)
         # Get updated status

@@ -9,7 +9,7 @@ import pytest
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 import os
-from src.utils.utils import extract_hidden_td
+from src.utils.utils import extract_hidden_td, setup_browser
 
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
@@ -132,3 +132,7 @@ def test_extract_hidden_td(chrome_browser):
 )
 def test_extract_author_id(url, expected_id):
     assert extract_author_id(url) == expected_id
+
+
+def test_browser_setup(chrome_browser):
+    assert chrome_browser == setup_browser()
