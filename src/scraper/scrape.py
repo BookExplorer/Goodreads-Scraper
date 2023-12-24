@@ -21,8 +21,8 @@ def scrape_shelf(url: str):
     browser.get(url)
 
     # Wait for initial load
-    WebDriverWait(browser, 10).until(
-        EC.presence_of_element_located((By.TAG_NAME, body))
+    body = WebDriverWait(browser, 10).until(
+        EC.presence_of_element_located((By.TAG_NAME, "body"))
     )
     # Clicks to remove login popup.
     webdriver.ActionChains(browser).move_by_offset(10, 100).click().perform()
@@ -31,7 +31,6 @@ def scrape_shelf(url: str):
         EC.presence_of_element_located((By.ID, "infiniteStatus"))
     )
     current_books, remaining_books = parse_infinite_status(infinite_status)
-    body = browser.find_element(By.TAG_NAME, "body")
     while current_books < remaining_books:
         # Scroll down
         body.send_keys(Keys.END)

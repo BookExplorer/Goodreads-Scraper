@@ -156,7 +156,7 @@ def process_book(browser: WebDriver, book: WebElement) -> Dict[str, any]:
         extract_hidden_td(browser, book, "td.field.avg_rating > div.value")
     )
     user_stars = book.find_element(By.CSS_SELECTOR, "td.field.rating").text
-    user_rating = STARS_ENUM[user_stars]
+    user_rating = STARS_ENUM.get(user_stars, None)
     pages_string = extract_hidden_td(browser, book, "td.field.num_pages")
     num_pages = extract_num_pages(pages_string)
     publishing_date = extract_hidden_td(browser, book, "td.field.date_pub > div.value")
