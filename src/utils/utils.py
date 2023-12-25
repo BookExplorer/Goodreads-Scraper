@@ -5,7 +5,8 @@ from selenium.webdriver.common.by import By
 from urllib.parse import urlparse, urlunparse, ParseResult
 from typing import Dict, Tuple, Union
 from selenium.webdriver.remote.webelement import WebElement
-
+from selenium.webdriver.chrome.options import Options
+from selenium import webdriver
 
 STARS_ENUM = {
     "did not like it": 1,
@@ -199,5 +200,9 @@ def parse_infinite_status(infinite_status: WebElement) -> Tuple[int, int]:
     return current_books, remaining_books
 
 
-def setup_browser():
-    pass
+def setup_browser() -> WebDriver:
+    chrome_options = Options()
+    chrome_options.add_argument("--headless")
+    chrome_options.add_argument("--window-size=1920,1080")
+    browser = webdriver.Chrome(options=chrome_options)
+    return browser

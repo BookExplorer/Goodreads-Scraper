@@ -135,4 +135,4 @@ def test_extract_author_id(url, expected_id):
 
 
 def test_browser_setup(chrome_browser):
-    assert chrome_browser == setup_browser()
+    assert type(chrome_browser) == type(setup_browser())
