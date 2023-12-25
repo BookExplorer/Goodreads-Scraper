@@ -10,7 +10,9 @@ from selenium.webdriver.remote.webelement import WebElement
 URL = "https://www.goodreads.com/review/list/71341746?shelf=read"
 
 
-def scroll_shelf(infinite_status: WebElement, body: WebElement, browser: WebDriver):
+def scroll_shelf(
+    infinite_status: WebElement, body: WebElement, browser: WebDriver
+) -> None:
     current_books, remaining_books = parse_infinite_status(infinite_status)
     while current_books < remaining_books:
         # Scroll down

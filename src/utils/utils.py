@@ -201,6 +201,12 @@ def parse_infinite_status(infinite_status: WebElement) -> Tuple[int, int]:
 
 
 def setup_browser() -> WebDriver:
+    """Handles setup of the browser. For now, it's a Chrome Browser.
+    TODO: Perhaps this could be dynamical?
+
+    Returns:
+        WebDriver: Headless browser to be used for scraping.
+    """
     chrome_options = Options()
     chrome_options.add_argument("--headless")
     chrome_options.add_argument("--window-size=1920,1080")
