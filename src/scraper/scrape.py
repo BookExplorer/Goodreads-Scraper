@@ -22,8 +22,9 @@ def scroll_shelf(
             lambda x: len(x.find_elements(By.CLASS_NAME, "bookalike")) > current_books
         )
         infinite_status = WebDriverWait(browser, 5).until(
-            lambda x: x.find_element(By.ID, "infiniteStatus")
+            EC.presence_of_element_located((By.ID, "infiniteStatus"))
         )
+
         current_books, _ = parse_infinite_status(infinite_status)
 
 
