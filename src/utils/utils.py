@@ -43,8 +43,8 @@ def is_goodreads_profile(url: str) -> bool:
     Returns:
         bool: True if it's a user profile in GR, False otherwise.
     """
-    # A URL is a profile if it's a valid Goodreads URL and follows the Regex for having user/show/{USER_ID}
-    pattern = r"^https:\/\/www\.goodreads\.com\/user\/show\/\d+$"
+    # A URL is a profile if it's a valid Goodreads URL and follows the Regex for having user/show/{USER_ID}-(username)
+    pattern = r"^https:\/\/www\.goodreads\.com\/user\/show\/\d+(-\w+)*$"
     return bool(re.match(pattern, url)) and is_valid_goodreads_url(url)
 
 

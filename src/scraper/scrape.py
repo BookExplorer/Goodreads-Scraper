@@ -1,13 +1,18 @@
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.common.by import By
-from src.utils.utils import process_book, parse_infinite_status, setup_browser
+from src.utils.utils import (
+    create_shelf_url,
+    process_book,
+    parse_infinite_status,
+    setup_browser,
+    is_goodreads_profile,
+)
 from selenium.webdriver.chrome.webdriver import WebDriver
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.remote.webelement import WebElement
-
-URL = "https://www.goodreads.com/review/list/71341746?shelf=read"
+from typing import Dict, List
 
 
 def scroll_shelf(
@@ -49,6 +54,16 @@ def scrape_shelf(url: str):
     return book_list
 
 
+def main() -> List[Dict[str, str]]:
+    user_input = input("Hey! Please paste your Goodreads profile. ")
+    valid_profile = is_goodreads_profile(user_input)
+    if not valid_profile:
+        raise ValueError("Your URL was not a valid Goodreads profile.")
+    read_shelf_url = create_shelf_url(user_input)
+    user_books = scrape_shelf(read_shelf_url)
+    return user_books
+
+
 if __name__ == "__main__":
-    book_list = scrape_shelf(URL)
-    print(book_list)
+    books = main()
+    print(books)

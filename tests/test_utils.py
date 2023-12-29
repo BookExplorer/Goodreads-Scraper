@@ -55,6 +55,7 @@ def test_goodreads_url(url: str, expected: bool):
         ("https:/www.goodreads.com/user/show/1", False),
         ("https://www.goodreads.com/user/show/1 with space", False),
         ("https://www.goodreads.com/user/show/abc", False),
+        ("https://www.goodreads.com/user/show/71341746-tamir-einhorn-salem", True),
     ],
 )
 def test_profile_url(url: str, expected: bool):
