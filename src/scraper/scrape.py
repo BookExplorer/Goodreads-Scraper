@@ -54,16 +54,16 @@ def scrape_shelf(url: str):
     return book_list
 
 
-def main() -> List[Dict[str, str]]:
-    user_input = input("Hey! Please paste your Goodreads profile. ")
-    valid_profile = is_goodreads_profile(user_input)
+def main(user_profile: str) -> List[Dict[str, str]]:
+    valid_profile = is_goodreads_profile(user_profile)
     if not valid_profile:
         raise ValueError("Your URL was not a valid Goodreads profile.")
-    read_shelf_url = create_shelf_url(user_input)
+    read_shelf_url = create_shelf_url(user_profile)
     user_books = scrape_shelf(read_shelf_url)
     return user_books
 
 
 if __name__ == "__main__":
-    books = main()
+    user_profile = input("Please input your profile.")
+    books = main(user_profile)
     print(books)
