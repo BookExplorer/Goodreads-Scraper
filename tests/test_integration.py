@@ -1,7 +1,6 @@
 import pytest
-from src.scraper.scrape import scrape_shelf
+from goodreads_scraper.scrape import scrape_shelf
 from pathlib import Path
-from urllib.request import pathname2url
 
 fixture_path = Path(__file__).parent.joinpath("test_assets", "example_goodreads.html")
 

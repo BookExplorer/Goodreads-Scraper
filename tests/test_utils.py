@@ -1,4 +1,4 @@
-from src.utils.utils import (
+from goodreads_scraper.utils import (
     is_valid_goodreads_url,
     is_goodreads_profile,
     create_shelf_url,
@@ -9,7 +9,7 @@ import pytest
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 import os
-from src.utils.utils import extract_hidden_td, setup_browser
+from goodreads_scraper.utils import extract_hidden_td, setup_browser
 
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC

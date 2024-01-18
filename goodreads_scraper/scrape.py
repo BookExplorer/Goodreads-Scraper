@@ -1,7 +1,7 @@
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.common.by import By
-from src.utils.utils import (
+from utils import (
     create_shelf_url,
     process_book,
     parse_infinite_status,
