@@ -62,11 +62,19 @@ def scrape_shelf(url: str) -> List[Dict[str, any]]:
     infinite_status = WebDriverWait(browser, 15).until(
         EC.presence_of_element_located((By.ID, "infiniteStatus"))
     )
-    if infinite_status.text:
+    if infinite_status.text:  # If there is text, the scroll will work.
         scroll_shelf(infinite_status, body, browser)
         books = browser.find_elements(By.CLASS_NAME, "bookalike")
         book_list = [process_book(browser, book) for book in books]
     else:
+        pagination = WebDriverWait(browser, 10).until(
+            EC.presence_of_element_located((By.ID, "reviewPagination"))
+        )
+        next_pages = pagination.find_elements(By.CSS_SELECTOR, "a")
+        max_page = int(next_pages[-2].text)
+        # TODO: A ideia é você montar o link adicionando na vibe:
+        # ?page=3&shelf=read
+        # Aí você processa cada página e vai adicionando.
         raise NotImplementedError("Yet to implement how to deal with this.")
     browser.quit()
     return book_list

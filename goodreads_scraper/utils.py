@@ -6,6 +6,8 @@ from urllib.parse import urlparse, urlunparse, ParseResult
 from typing import Dict, Tuple, Union
 from selenium.webdriver.remote.webelement import WebElement
 from selenium.webdriver.chrome.options import Options
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
 from selenium import webdriver
 
 STARS_ENUM = {
@@ -216,3 +218,11 @@ def setup_browser() -> WebDriver:
 
 # TODO: Aparentemente, não tem infinite scroll mais/sempre.
 # Nesses casos, você precisa buscar a maior página possível, e ir andando de uma em uma.
+
+
+def pagination_process(browser: WebDriver):
+    pagination = WebDriverWait(browser, 10).until(
+        EC.presence_of_element_located((By.ID, "reviewPagination"))
+    )
+    next_pages = pagination.find_elements(By.CSS_SELECTOR, "a")
+    pass
