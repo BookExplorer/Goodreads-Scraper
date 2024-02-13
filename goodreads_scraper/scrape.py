@@ -62,9 +62,12 @@ def scrape_shelf(url: str) -> List[Dict[str, any]]:
     infinite_status = WebDriverWait(browser, 15).until(
         EC.presence_of_element_located((By.ID, "infiniteStatus"))
     )
-    scroll_shelf(infinite_status, body, browser)
-    books = browser.find_elements(By.CLASS_NAME, "bookalike")
-    book_list = [process_book(browser, book) for book in books]
+    if infinite_status.text:
+        scroll_shelf(infinite_status, body, browser)
+        books = browser.find_elements(By.CLASS_NAME, "bookalike")
+        book_list = [process_book(browser, book) for book in books]
+    else:
+        raise NotImplemented("Yet to implement how to deal with this.")
     browser.quit()
     return book_list
 
