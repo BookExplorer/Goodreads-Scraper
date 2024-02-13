@@ -67,7 +67,7 @@ def scrape_shelf(url: str) -> List[Dict[str, any]]:
         books = browser.find_elements(By.CLASS_NAME, "bookalike")
         book_list = [process_book(browser, book) for book in books]
     else:
-        raise NotImplemented("Yet to implement how to deal with this.")
+        raise NotImplementedError("Yet to implement how to deal with this.")
     browser.quit()
     return book_list
 
