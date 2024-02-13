@@ -59,7 +59,7 @@ def scrape_shelf(url: str) -> List[Dict[str, any]]:
     # Clicks to remove login popup.
     webdriver.ActionChains(browser).move_by_offset(10, 100).click().perform()
     # Wait for the infinite status
-    infinite_status = WebDriverWait(browser, 5).until(
+    infinite_status = WebDriverWait(browser, 15).until(
         EC.presence_of_element_located((By.ID, "infiniteStatus"))
     )
     scroll_shelf(infinite_status, body, browser)
