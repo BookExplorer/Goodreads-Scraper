@@ -3,10 +3,12 @@ from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.common.by import By
 from goodreads_scraper.utils import (
     create_shelf_url,
-    process_book,
+    create_read_page,
     parse_infinite_status,
     setup_browser,
     is_goodreads_profile,
+    read_books,
+    page_wait,
 )
 from selenium.webdriver.chrome.webdriver import WebDriver
 from selenium.webdriver.support.ui import WebDriverWait
@@ -53,29 +55,27 @@ def scrape_shelf(url: str) -> List[Dict[str, any]]:
     browser.get(url)
 
     # Wait for initial load
-    body = WebDriverWait(browser, 10).until(
-        EC.presence_of_element_located((By.TAG_NAME, "body"))
-    )
-    # Clicks to remove login popup.
-    webdriver.ActionChains(browser).move_by_offset(10, 100).click().perform()
+    body = page_wait(browser)
     # Wait for the infinite status
     infinite_status = WebDriverWait(browser, 15).until(
         EC.presence_of_element_located((By.ID, "infiniteStatus"))
     )
     if infinite_status.text:  # If there is text, the scroll will work.
         scroll_shelf(infinite_status, body, browser)
-        books = browser.find_elements(By.CLASS_NAME, "bookalike")
-        book_list = [process_book(browser, book) for book in books]
+        book_list = read_books(browser)
     else:
         pagination = WebDriverWait(browser, 10).until(
             EC.presence_of_element_located((By.ID, "reviewPagination"))
         )
         next_pages = pagination.find_elements(By.CSS_SELECTOR, "a")
         max_page = int(next_pages[-2].text)
-        # TODO: A ideia é você montar o link adicionando na vibe:
-        # ?page=3&shelf=read
+        book_list = read_books(browser)
+        for i in range(2, max_page + 1):
+            new_url = create_read_page(url, i)
+            browser.get(new_url)
+            body = page_wait(browser)
+            book_list += read_books(browser)
         # Aí você processa cada página e vai adicionando.
-        raise NotImplementedError("Yet to implement how to deal with this.")
     browser.quit()
     return book_list
 

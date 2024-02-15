@@ -83,6 +83,21 @@ def create_shelf_url(profile_url: str) -> str:
     return read_shelf_url
 
 
+def create_read_page(shelf_url: str, page_num: int):
+    parsed_url = urlparse(shelf_url)
+    page_url = urlunparse(
+        ParseResult(
+            scheme=parsed_url.scheme,  # Https
+            netloc=parsed_url.netloc,  # The goodreads site
+            path=parsed_url.path,  # The review list for that user
+            params="",
+            query=f"page={page_num}&shelf=read",
+            fragment="",
+        )
+    )
+    return page_url
+
+
 def extract_hidden_td(
     browser: WebDriver, element: WebElement, css_selector: str
 ) -> str:
@@ -216,13 +231,17 @@ def setup_browser() -> WebDriver:
     return browser
 
 
-# TODO: Aparentemente, não tem infinite scroll mais/sempre.
-# Nesses casos, você precisa buscar a maior página possível, e ir andando de uma em uma.
+def read_books(browser: WebDriver):
+    books = browser.find_elements(By.CLASS_NAME, "bookalike")
+    book_list = [process_book(browser, book) for book in books]
+    return book_list
 
 
-def pagination_process(browser: WebDriver):
-    pagination = WebDriverWait(browser, 10).until(
-        EC.presence_of_element_located((By.ID, "reviewPagination"))
+def page_wait(browser: WebDriver) -> WebElement:
+    # Wait for initial load
+    body = WebDriverWait(browser, 10).until(
+        EC.presence_of_element_located((By.TAG_NAME, "body"))
     )
-    next_pages = pagination.find_elements(By.CSS_SELECTOR, "a")
-    pass
+    # Clicks to remove login popup.
+    webdriver.ActionChains(browser).move_by_offset(10, 100).click().perform()
+    return body
