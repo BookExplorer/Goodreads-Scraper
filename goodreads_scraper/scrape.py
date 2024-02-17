@@ -14,6 +14,7 @@ from selenium.webdriver.chrome.webdriver import WebDriver
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.remote.webelement import WebElement
+from selenium.common.exceptions import TimeoutException
 from typing import Dict, List
 
 
@@ -64,17 +65,21 @@ def scrape_shelf(url: str) -> List[Dict[str, any]]:
         scroll_shelf(infinite_status, body, browser)
         book_list = read_books(browser)
     else:
-        pagination = WebDriverWait(browser, 10).until(
-            EC.presence_of_element_located((By.ID, "reviewPagination"))
-        )
-        next_pages = pagination.find_elements(By.CSS_SELECTOR, "a")
-        max_page = int(next_pages[-2].text)
         book_list = read_books(browser)
-        for i in range(2, max_page + 1):
-            new_url = create_read_page(url, i)
-            browser.get(new_url)
-            body = page_wait(browser)
-            book_list += read_books(browser)
+        try:
+            pagination = WebDriverWait(browser, 10).until(
+                EC.presence_of_element_located((By.ID, "reviewPagination"))
+            )
+            next_pages = pagination.find_elements(By.CSS_SELECTOR, "a")
+            max_page = int(next_pages[-2].text)
+
+            for i in range(2, max_page + 1):
+                new_url = create_read_page(url, i)
+                browser.get(new_url)
+                body = page_wait(browser)
+                book_list += read_books(browser)
+        except TimeoutException:
+            print("No pagination, single page shelf.")
         # Aí você processa cada página e vai adicionando.
     browser.quit()
     return book_list
@@ -103,6 +108,6 @@ def process_profile(user_profile: str) -> List[Dict[str, str]]:
 
 
 if __name__ == "__main__":
-    user_profile = input("Please input your profile.")
+    user_profile = "https://www.goodreads.com/user/show/71341746-tamir-einhorn-salem"
     books = process_profile(user_profile)
     print(books)
