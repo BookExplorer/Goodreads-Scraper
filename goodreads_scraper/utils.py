@@ -225,7 +225,7 @@ def setup_browser() -> WebDriver:
         WebDriver: Headless browser to be used for scraping.
     """
     chrome_options = Options()
-    # chrome_options.add_argument("--headless")
+    chrome_options.add_argument("--headless")
     chrome_options.add_argument("--window-size=1920,1080")
     browser = webdriver.Chrome(options=chrome_options)
     return browser
