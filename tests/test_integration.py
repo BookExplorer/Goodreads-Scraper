@@ -1,5 +1,5 @@
 import pytest
-from goodreads_scraper.scrape import scrape_shelf
+from goodreads_scraper.scrape import scrape_shelf, process_profile
 from pathlib import Path
 
 fixture_path = Path(__file__).parent.joinpath("test_assets", "example_goodreads.html")
@@ -34,16 +34,15 @@ def test_scrape_live_shelf():
 
     # Verify that the known titles are in the actual results
     actual_titles = [book["title"] for book in actual_results]
-    for title in EXPECTED_RESULTS["known_titles"]:
+    for title in ["Les Visages", "O poderoso chefão"]:
         assert title in actual_titles
 
 
 @pytest.mark.integration
 def test_scrape_another_live_shelf():
     # Run the scraper
-    actual_results = scrape_shelf(
-        "https://www.goodreads.com/review/list/71341746?shelf=read"
-    )
+    user_profile = "https://www.goodreads.com/user/show/71341746-tamir-einhorn-salem"
+    actual_results = process_profile(user_profile)
 
     # Check if the number of books matches the expectation
     assert len(actual_results) >= 300
