@@ -243,5 +243,7 @@ def page_wait(browser: WebDriver) -> WebElement:
         EC.presence_of_element_located((By.TAG_NAME, "body"))
     )
     # Clicks to remove login popup.
-    webdriver.ActionChains(browser).move_by_offset(10, 100).click().perform()
+    login_modal = browser.find_elements(By.CLASS_NAME, "loginModal")
+    if login_modal:
+        webdriver.ActionChains(browser).move_by_offset(10, 100).click().perform()
     return body

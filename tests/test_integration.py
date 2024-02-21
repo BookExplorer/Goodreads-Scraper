@@ -12,7 +12,7 @@ def goodreads_html():
         return file.read()
 
 
-TEST_URL = "https://www.goodreads.com/review/list/71341746?shelf=quarantine"
+TEST_URL = "https://www.goodreads.com/review/list/71341746?shelf=read"
 
 
 EXPECTED_RESULTS = {
@@ -31,6 +31,20 @@ def test_scrape_live_shelf():
 
     # Check if the number of books matches the expectation
     assert len(actual_results) == EXPECTED_RESULTS["number_of_books"]
+
+    # Verify that the known titles are in the actual results
+    actual_titles = [book["title"] for book in actual_results]
+    for title in EXPECTED_RESULTS["known_titles"]:
+        assert title in actual_titles
+
+
+@pytest.mark.integration
+def test_scrape_another_live_shelf():
+    # Run the scraper
+    actual_results = scrape_shelf(TEST_URL)
+
+    # Check if the number of books matches the expectation
+    assert len(actual_results) >= 300
 
     # Verify that the known titles are in the actual results
     actual_titles = [book["title"] for book in actual_results]
