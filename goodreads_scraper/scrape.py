@@ -58,10 +58,15 @@ def scrape_shelf(url: str) -> List[Dict[str, any]]:
     # Wait for initial load
     body = page_wait(browser)
     # Wait for the infinite status
-    infinite_status = WebDriverWait(browser, 15).until(
-        EC.presence_of_element_located((By.ID, "infiniteStatus"))
-    )
-    if infinite_status.text:  # If there is text, the scroll will work.
+    try:
+        infinite_status = WebDriverWait(browser, 25).until(
+            EC.presence_of_element_located((By.ID, "infiniteStatus"))
+        )
+        infinite_status_text = infinite_status.text
+    except TimeoutException:
+        print("Infinite status timeout.")
+        infinite_status_text = None
+    if infinite_status_text:  # If there is text, the scroll will work.
         scroll_shelf(infinite_status, body, browser)
         book_list = read_books(browser)
     else:
