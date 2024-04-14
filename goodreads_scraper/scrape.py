@@ -8,10 +8,12 @@ from goodreads_scraper.utils import (
     setup_browser,
     is_goodreads_profile,
     read_books,
+    read_books_fast,
     page_wait,
 )
 from selenium.webdriver.chrome.webdriver import WebDriver
 from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support.select import Select
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.remote.webelement import WebElement
 from selenium.common.exceptions import TimeoutException
@@ -57,9 +59,10 @@ def scrape_shelf(url: str) -> List[Dict[str, any]]:
 
     # Wait for initial load
     body = page_wait(browser)
+
     # Wait for the infinite status
     try:
-        infinite_status = WebDriverWait(browser, 15).until(
+        infinite_status = WebDriverWait(browser, 5).until(
             EC.presence_of_element_located((By.ID, "infiniteStatus"))
         )
         infinite_status_text = infinite_status.text
@@ -68,9 +71,9 @@ def scrape_shelf(url: str) -> List[Dict[str, any]]:
         infinite_status_text = None
     if infinite_status_text:  # If there is text, the scroll will work.
         scroll_shelf(infinite_status, body, browser)
-        book_list = read_books(browser)
+        book_list = read_books_fast(browser)
     else:
-        book_list = read_books(browser)
+        book_list = read_books_fast(browser)
         try:
             pagination = WebDriverWait(browser, 10).until(
                 EC.presence_of_element_located((By.ID, "reviewPagination"))
@@ -82,7 +85,7 @@ def scrape_shelf(url: str) -> List[Dict[str, any]]:
                 new_url = create_read_page(url, i)
                 browser.get(new_url)
                 body = page_wait(browser)
-                book_list += read_books(browser)
+                book_list += read_books_fast(browser)
         except TimeoutException:
             print("No pagination, single page shelf.")
         # Aí você processa cada página e vai adicionando.

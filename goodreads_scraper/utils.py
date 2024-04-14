@@ -228,7 +228,7 @@ def setup_browser() -> WebDriver:
     chrome_options.add_argument("--headless")
     chrome_options.add_argument("--window-size=1920,1080")
     chrome_options.add_argument(
-        "--user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36"
+        "--user-agent='Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36'"
     )
 
     browser = webdriver.Chrome(options=chrome_options)
@@ -241,8 +241,57 @@ def read_books(browser: WebDriver):
     return book_list
 
 
+def read_books_fast(browser: WebDriver):
+    js_code = """
+    var books = Array.from(document.getElementsByClassName('bookalike'));
+    return books.map(function(book) {
+        var data = {};
+        
+        // Extracting data directly
+        data['isbn'] = book.querySelector('td.field.isbn div.value').textContent.trim();
+        data['isbn13'] = book.querySelector('td.field.isbn13 div.value').textContent.trim();
+        data['title'] = book.querySelector('td.field.title').textContent.replace(/^title\s+|\s\s+/g, ' ').trim();
+        var author_info = book.querySelector('td.field.author div.value a');
+        data['author_name'] = author_info.textContent.trim();
+        data['author_link'] = 'https://www.goodreads.com'  + author_info.getAttribute('href');
+        data['avg_rating'] = parseFloat(book.querySelector('td.field.avg_rating div.value').textContent.trim());
+        data['user_rating'] = book.querySelector('td.field.rating').textContent.trim();  // You need to convert this according to your STARS_ENUM in Python
+        data['num_pages'] = parseInt(book.querySelector('td.field.num_pages div.value').textContent.trim());
+        data['publishing_date'] = book.querySelector('td.field.date_pub div.value').textContent.trim();
+        data['started_date'] = book.querySelector('td.field.date_started div.value').textContent.trim();
+        data['finished_date'] = book.querySelector('td.field.date_read div.value').textContent.trim();
+        data['added_date'] = book.querySelector('td.field.date_added div.value').textContent.trim();
+
+        // Extract author id from the author link
+        data['author_id'] = null;  // Initialize to null to handle cases where the regex might not find a match
+        var author_id_match = /\/author\/show\/(\d+)./.exec(data['author_link']);
+        if (author_id_match) {
+            data['author_id'] = parseInt(author_id_match[1]);
+        }
+
+        
+        return data;
+    });
+    """
+    # Execute the script and get all book data in one call
+    books_data = browser.execute_script(js_code)
+
+    # Process data further if necessary (e.g., mapping 'user_rating' to your STARS_ENUM)
+    for book_data in books_data:
+        # Example of converting 'user_rating' based on STARS_ENUM
+        # This assumes STARS_ENUM is a dict in your Python code mapping the text to a value
+        book_data["user_rating"] = STARS_ENUM.get(book_data["user_rating"], None)
+
+        # Process other fields if necessary
+
+    return books_data
+
+
 def page_wait(browser: WebDriver) -> WebElement:
     # Wait for initial load
+    WebDriverWait(browser, 30).until(
+        lambda d: d.execute_script("return document.readyState") == "complete"
+    )
     body = WebDriverWait(browser, 10).until(
         EC.presence_of_element_located((By.TAG_NAME, "body"))
     )
