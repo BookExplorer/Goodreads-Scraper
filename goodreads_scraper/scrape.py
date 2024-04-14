@@ -59,7 +59,7 @@ def scrape_shelf(url: str) -> List[Dict[str, any]]:
     body = page_wait(browser)
     # Wait for the infinite status
     try:
-        infinite_status = WebDriverWait(browser, 25).until(
+        infinite_status = WebDriverWait(browser, 15).until(
             EC.presence_of_element_located((By.ID, "infiniteStatus"))
         )
         infinite_status_text = infinite_status.text
