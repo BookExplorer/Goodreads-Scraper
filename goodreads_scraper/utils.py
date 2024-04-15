@@ -9,6 +9,7 @@ from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium import webdriver
+from webdriver_manager.chrome import ChromeDriverManager
 
 STARS_ENUM = {
     "did not like it": 1,
@@ -232,7 +233,9 @@ def setup_browser() -> WebDriver:
         "--user-agent='Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36'"
     )
 
-    browser = webdriver.Chrome(options=chrome_options)
+    browser = webdriver.Chrome(
+        service=ChromeDriverManager().install(), options=chrome_options
+    )
     return browser
 
 
