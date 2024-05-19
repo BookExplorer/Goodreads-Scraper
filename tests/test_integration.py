@@ -1,5 +1,5 @@
 import pytest
-from goodreads_scraper.scrape import scrape_shelf, process_profile
+from goodreads_scraper.scrape import scrape_shelf, process_profile, scrape_gr_author
 from pathlib import Path
 
 fixture_path = Path(__file__).parent.joinpath("test_assets", "example_goodreads.html")
@@ -68,3 +68,17 @@ def test_scrape_saved_shelf():
     actual_titles = [book["title"] for book in actual_results]
     for title in EXPECTED_RESULTS["known_titles"]:
         assert title in actual_titles
+
+
+@pytest.mark.parametrize(
+    "url, expected",
+    [
+        (
+            "https://www.goodreads.com/author/show/13199.Alain_de_Botton",
+            "Zurich, Switzerland",
+        ),
+        ("https://www.goodreads.com/author/show/6062267.Yaniv_Shimony", None),
+    ],
+)
+def test_scrape_gr_author(url: str, expected: None | str):
+    assert scrape_gr_author(url) == expected
