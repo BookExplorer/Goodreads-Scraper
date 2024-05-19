@@ -10,7 +10,7 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium import webdriver
 import chromedriver_autoinstaller
-
+import os
 
 chromedriver_autoinstaller.install()  # Check if the current version of chromedriver exists
 # and if it doesn't exist, download it automatically,
@@ -22,6 +22,13 @@ STARS_ENUM = {
     "really liked it": 4,
     "it was amazing": 5,
 }
+
+
+def load_js_file(file_name: str) -> str:
+    script_dir = os.path.dirname(__file__)  # Absolute directory the script is in
+    abs_file_path = os.path.join(script_dir, file_name)
+    with open(abs_file_path, "r") as file:
+        return file.read()
 
 
 def is_valid_goodreads_url(url: str) -> bool:
@@ -88,7 +95,16 @@ def create_shelf_url(profile_url: str) -> str:
     return read_shelf_url
 
 
-def create_read_page(shelf_url: str, page_num: int):
+def create_read_page(shelf_url: str, page_num: int) -> str:
+    """From a user's GR shelf URL, create a URL for the read shelf page.
+
+    Args:
+        shelf_url (str): Valid URL for a user's GR shelf.
+        page_num (int): _description_
+
+    Returns:
+        str: URL for that specific GR shelf page.
+    """
     parsed_url = urlparse(shelf_url)
     page_url = urlunparse(
         ParseResult(
@@ -248,37 +264,7 @@ def read_books(browser: WebDriver):
 
 
 def read_books_fast(browser: WebDriver):
-    js_code = """
-    var books = Array.from(document.getElementsByClassName('bookalike'));
-    return books.map(function(book) {
-        var data = {};
-        
-        // Extracting data directly
-        data['isbn'] = book.querySelector('td.field.isbn div.value').textContent.trim();
-        data['isbn13'] = book.querySelector('td.field.isbn13 div.value').textContent.trim();
-        data['title'] = book.querySelector('td.field.title').textContent.replace(/^title\s+|\s\s+/g, ' ').trim();
-        var author_info = book.querySelector('td.field.author div.value a');
-        data['author_name'] = author_info.textContent.trim();
-        data['author_link'] = 'https://www.goodreads.com'  + author_info.getAttribute('href');
-        data['avg_rating'] = parseFloat(book.querySelector('td.field.avg_rating div.value').textContent.trim());
-        data['user_rating'] = book.querySelector('td.field.rating').textContent.trim();  // You need to convert this according to your STARS_ENUM in Python
-        data['num_pages'] = parseInt(book.querySelector('td.field.num_pages div.value').textContent.trim());
-        data['publishing_date'] = book.querySelector('td.field.date_pub div.value').textContent.trim();
-        data['started_date'] = book.querySelector('td.field.date_started div.value').textContent.trim();
-        data['finished_date'] = book.querySelector('td.field.date_read div.value').textContent.trim();
-        data['added_date'] = book.querySelector('td.field.date_added div.value').textContent.trim();
-
-        // Extract author id from the author link
-        data['author_id'] = null;  // Initialize to null to handle cases where the regex might not find a match
-        var author_id_match = /\/author\/show\/(\d+)./.exec(data['author_link']);
-        if (author_id_match) {
-            data['author_id'] = parseInt(author_id_match[1]);
-        }
-
-        
-        return data;
-    });
-    """
+    js_code = load_js_file("read_books.js")
     # Execute the script and get all book data in one call
     books_data = browser.execute_script(js_code)
 
