@@ -6,7 +6,6 @@ from goodreads_scraper.utils import (
     parse_infinite_status,
     setup_browser,
     is_goodreads_profile,
-    read_books,
     read_books_fast,
     page_wait,
 )
