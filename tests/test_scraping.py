@@ -1,4 +1,5 @@
 import pytest
+from typing import Tuple
 from goodreads_scraper.scrape import scrape_shelf, process_profile, scrape_gr_author
 from pathlib import Path
 
@@ -75,10 +76,11 @@ def test_scrape_saved_shelf():
     [
         (
             "https://www.goodreads.com/author/show/13199.Alain_de_Botton",
-            "Zurich, Switzerland",
+            ("Zurich, Switzerland", "Switzerland"),
         ),
-        ("https://www.goodreads.com/author/show/6062267.Yaniv_Shimony", None),
+        ("https://www.goodreads.com/author/show/6062267.Yaniv_Shimony", (None, None)),
     ],
 )
-def test_scrape_gr_author(url: str, expected: None | str):
-    assert scrape_gr_author(url) == expected
+def test_scrape_gr_author(url: str, expected: Tuple):
+    results = scrape_gr_author(url)
+    assert results == expected

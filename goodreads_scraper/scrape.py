@@ -8,6 +8,7 @@ from goodreads_scraper.utils import (
     is_goodreads_profile,
     read_books_fast,
     page_wait,
+    cleanup_birthplace,
 )
 from selenium.webdriver.chrome.webdriver import WebDriver
 from selenium.webdriver.support.ui import WebDriverWait
@@ -145,7 +146,8 @@ def scrape_gr_author(url: str) -> str | None:
         birthplace = re.sub(r"^in\s+", "", raw_birthplace)
     except TimeoutException:
         birthplace = None
-    return birthplace
+    # Returns birthplace and country of birth.
+    return birthplace, cleanup_birthplace(birthplace)
 
 
 if __name__ == "__main__":
