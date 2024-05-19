@@ -3,7 +3,7 @@ from selenium.webdriver.chrome.webdriver import WebDriver
 import re
 from selenium.webdriver.common.by import By
 from urllib.parse import urlparse, urlunparse, ParseResult
-from typing import Dict, Tuple, Union
+from typing import Dict, Tuple, Union, List
 from selenium.webdriver.remote.webelement import WebElement
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.support.ui import WebDriverWait
@@ -263,7 +263,15 @@ def read_books(browser: WebDriver):
     return book_list
 
 
-def read_books_fast(browser: WebDriver):
+def read_books_fast(browser: WebDriver) -> List[Dict[str, any]]:
+    """Faster version of reading books, invokes a JS script to directly interact with all books at once via Selenium.
+
+    Args:
+        browser (WebDriver): Browser being used to scrape.
+
+    Returns:
+        List[Dict[str any]]: List of books and their attributes.
+    """
     js_code = load_js_file("read_books.js")
     # Execute the script and get all book data in one call
     books_data = browser.execute_script(js_code)
@@ -280,6 +288,14 @@ def read_books_fast(browser: WebDriver):
 
 
 def page_wait(browser: WebDriver) -> WebElement:
+    """Waits for the Goodreads page to load and clicks the popup so it disappears.
+
+    Args:
+        browser (WebDriver): Browser used for scraping.
+
+    Returns:
+        WebElement: Body of the webpage.
+    """
     # Wait for initial load
     WebDriverWait(browser, 30).until(
         lambda d: d.execute_script("return document.readyState") == "complete"
