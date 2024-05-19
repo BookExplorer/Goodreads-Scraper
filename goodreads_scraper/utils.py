@@ -308,3 +308,19 @@ def page_wait(browser: WebDriver) -> WebElement:
     if login_modal:
         webdriver.ActionChains(browser).move_by_offset(10, 100).click().perform()
     return body
+
+
+def cleanup_birthplace(birthplace: str | None) -> str | None:
+    """Cleans up the birthplace string that comes from Goodreads.
+
+    Args:
+        birthplace (str | None): Birthplace scraped from Goodreads.
+
+    Returns:
+        str | None: Cleaned up birthplace if applicable, None if birthplace is None.
+    """
+    if birthplace:
+        raw_country = birthplace.split(",")[-1].lstrip()
+        if raw_country.startswith("The "):
+            return raw_country[4:]
+        return raw_country

@@ -1,4 +1,3 @@
-from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.common.by import By
 from goodreads_scraper.utils import (
@@ -18,6 +17,7 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.remote.webelement import WebElement
 from selenium.common.exceptions import TimeoutException
 from typing import Dict, List
+import re
 
 
 def scroll_shelf(
@@ -113,6 +113,40 @@ def process_profile(user_profile: str) -> List[Dict[str, str]]:
     read_shelf_url = create_shelf_url(user_profile)
     user_books = scrape_shelf(read_shelf_url)
     return user_books
+
+
+def scrape_gr_author(url: str) -> str | None:
+    """
+    Scrapes the author's Goodreads page and extracts the author's birthplace.
+    Args:
+        url (str): The author's Goodreads URL, brought from the scraping of the user's page.
+
+    Returns:
+        str | None: Birthplace of the author or None if we can't find it in the authors page.
+    """
+
+    browser = setup_browser()
+
+    browser.get(url)
+
+    body = WebDriverWait(browser, 10).until(
+        EC.presence_of_element_located((By.TAG_NAME, "body"))
+    )
+    try:
+        born_label = WebDriverWait(browser, 10).until(
+            EC.presence_of_element_located(
+                (By.XPATH, "//div[@class='dataTitle' and text()='Born']")
+            )
+        )
+
+        raw_birthplace = browser.execute_script(
+            "return arguments[0].nextSibling.textContent.trim();", born_label
+        )
+
+        birthplace = re.sub(r"^in\s+", "", raw_birthplace)
+    except TimeoutException:
+        birthplace = None
+    return birthplace
 
 
 if __name__ == "__main__":
