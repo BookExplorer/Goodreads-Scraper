@@ -18,6 +18,7 @@ from selenium.webdriver.remote.webelement import WebElement
 from selenium.common.exceptions import TimeoutException
 from typing import Dict, List
 import re
+from logger import logger
 
 
 def scroll_shelf(
@@ -67,7 +68,7 @@ def scrape_shelf(url: str) -> List[Dict[str, any]]:
         )
         infinite_status_text = infinite_status.text
     except TimeoutException:
-        print("Infinite status timeout.")
+        logger.debug("Infinite status timeout.")
         infinite_status_text = None
     if infinite_status_text:  # If there is text, the scroll will work.
         scroll_shelf(infinite_status, body, browser)
@@ -87,7 +88,7 @@ def scrape_shelf(url: str) -> List[Dict[str, any]]:
                 body = page_wait(browser)
                 book_list += read_books_fast(browser)
         except TimeoutException:
-            print("No pagination, single page shelf.")
+            logger.debug("No pagination, single page shelf.")
         # Aí você processa cada página e vai adicionando.
     browser.quit()
     return book_list
