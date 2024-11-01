@@ -12,7 +12,6 @@ from selenium import webdriver
 import chromedriver_autoinstaller
 import os
 
-chromedriver_autoinstaller.install()  # Check if the current version of chromedriver exists
 # and if it doesn't exist, download it automatically,
 # then add chromedriver to path
 STARS_ENUM = {
@@ -245,6 +244,8 @@ def setup_browser() -> WebDriver:
     Returns:
         WebDriver: Headless browser to be used for scraping.
     """
+
+    chromedriver_autoinstaller.install(no_ssl=False)  # Check if the current version of chromedriver exists
     chrome_options = Options()
     chrome_options.add_argument("--headless")
     chrome_options.add_argument("--window-size=1920,1080")
