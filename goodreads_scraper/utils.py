@@ -3,7 +3,7 @@ from selenium.webdriver.chrome.webdriver import WebDriver
 import re
 from selenium.webdriver.common.by import By
 from urllib.parse import urlparse, urlunparse, ParseResult
-from typing import Dict, Tuple, Union, List
+from typing import Dict, Tuple, List, Any
 from selenium.webdriver.remote.webelement import WebElement
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.support.ui import WebDriverWait
@@ -12,7 +12,6 @@ from selenium import webdriver
 import chromedriver_autoinstaller
 import os
 
-chromedriver_autoinstaller.install()  # Check if the current version of chromedriver exists
 # and if it doesn't exist, download it automatically,
 # then add chromedriver to path
 STARS_ENUM = {
@@ -156,7 +155,7 @@ def extract_author_id(author_url: str) -> str:
     return author_id
 
 
-def extract_num_pages(page_string: str) -> Union[int, None]:
+def extract_num_pages(page_string: str) -> int | None:
     """Parses the webelement with the number of pages in a book into an actual number.
 
     Args:
@@ -169,9 +168,10 @@ def extract_num_pages(page_string: str) -> Union[int, None]:
     for p in parts:
         if p.isdigit():
             return int(p)
+    return None
 
 
-def process_book(browser: WebDriver, book: WebElement) -> Dict[str, any]:
+def process_book(browser: WebDriver, book: WebElement) -> Dict[str, Any]:
     """Given a web element from the Goodreads' user's shelf, scrapes the book information and returns a dict.
 
 
@@ -190,7 +190,8 @@ def process_book(browser: WebDriver, book: WebElement) -> Dict[str, any]:
         author_info.text
     )  # TODO: Get author's name from page. Might be better.
     author_link = author_info.get_attribute("href")
-    author_id = int(extract_author_id(author_link))
+    if author_link:
+        author_id = int(extract_author_id(author_link))
     avg_rating = float(
         extract_hidden_td(browser, book, "td.field.avg_rating > div.value")
     )
@@ -245,6 +246,8 @@ def setup_browser() -> WebDriver:
     Returns:
         WebDriver: Headless browser to be used for scraping.
     """
+
+    chromedriver_autoinstaller.install(no_ssl=False)  # Check if the current version of chromedriver exists
     chrome_options = Options()
     chrome_options.add_argument("--headless")
     chrome_options.add_argument("--window-size=1920,1080")
@@ -263,7 +266,7 @@ def read_books(browser: WebDriver):
     return book_list
 
 
-def read_books_fast(browser: WebDriver) -> List[Dict[str, any]]:
+def read_books_fast(browser: WebDriver) -> List[Dict[str, Any]]:
     """Faster version of reading books, invokes a JS script to directly interact with all books at once via Selenium.
 
     Args:
@@ -324,3 +327,4 @@ def cleanup_birthplace(birthplace: str | None) -> str | None:
         if raw_country.startswith("The "):
             return raw_country[4:]
         return raw_country
+    return None
