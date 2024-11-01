@@ -12,11 +12,10 @@ from goodreads_scraper.utils import (
 )
 from selenium.webdriver.chrome.webdriver import WebDriver
 from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.support.select import Select
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.remote.webelement import WebElement
 from selenium.common.exceptions import TimeoutException
-from typing import Dict, List
+from typing import Dict, List, Any
 import re
 from logger import logger
 
@@ -46,7 +45,7 @@ def scroll_shelf(
         current_books, _ = parse_infinite_status(infinite_status)
 
 
-def scrape_shelf(url: str) -> List[Dict[str, any]]:
+def scrape_shelf(url: str) -> List[Dict[str, Any]]:
     """Performs the extraction of all the books from a valid shelf URL.
 
     Args:
@@ -116,7 +115,7 @@ def process_profile(user_profile: str) -> List[Dict[str, str]]:
     return user_books
 
 
-def scrape_gr_author(url: str) -> str | None:
+def scrape_gr_author(url: str) -> tuple[str | None, str | None]:
     """
     Scrapes the author's Goodreads page and extracts the author's birthplace.
     Args:
