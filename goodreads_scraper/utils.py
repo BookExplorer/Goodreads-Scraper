@@ -328,3 +328,7 @@ def cleanup_birthplace(birthplace: str | None) -> str | None:
             return raw_country[4:]
         return raw_country
     return None
+
+
+def is_goodreads_shelf(url: str) -> bool:
+    pass

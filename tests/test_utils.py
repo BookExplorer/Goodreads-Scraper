@@ -4,6 +4,7 @@ from goodreads_scraper.utils import (
     create_shelf_url,
     extract_hidden_td,
     extract_author_id,
+    is_goodreads_shelf
 )
 import pytest
 from selenium import webdriver
@@ -137,3 +138,27 @@ def test_extract_author_id(url, expected_id):
 
 def test_browser_setup(chrome_browser):
     assert type(chrome_browser) == type(setup_browser())
+
+@pytest.mark.parametrize(
+    "url,expected",
+    [
+        ("https://www.goodreads.com/book/show/12345", False),
+        ("https://www.example.com", False),
+        ("not a url", False),
+        ("https://www.goodreads.com/user/show/1", True),
+        ("https://www.goodreads.com/user/show/300", True),
+        ("https://www.goodreads.com/review/list/300?shelf=read", False),
+        ("https://www.goodreads.com/user/show/1?param=value", False),
+        ("https://www.goodreads.com/user/show/", False),
+        ("https://www.goodreads.com/user", False),
+        ("https://profile.goodreads.com/user/show/1", False),
+        ("https://www.goodreads.com/user/show/1#details", False),
+        ("https:/www.goodreads.com/user/show/1", False),
+        ("https://www.goodreads.com/user/show/1 with space", False),
+        ("https://www.goodreads.com/user/show/abc", False),
+        ("https://www.goodreads.com/user/show/71341746-tamir-einhorn-salem", True),
+    ],
+)
+def test_is_goodreads_shelf(url: str, expected: bool
+                            ) -> None:
+    assert is_goodreads_shelf(url) == expected
