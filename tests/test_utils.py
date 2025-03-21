@@ -145,9 +145,9 @@ def test_browser_setup(chrome_browser):
         ("https://www.goodreads.com/book/show/12345", False),
         ("https://www.example.com", False),
         ("not a url", False),
-        ("https://www.goodreads.com/user/show/1", True),
-        ("https://www.goodreads.com/user/show/300", True),
-        ("https://www.goodreads.com/review/list/300?shelf=read", False),
+        ("https://www.goodreads.com/user/show/1", False),
+        ("https://www.goodreads.com/user/show/300", False),
+        ("https://www.goodreads.com/review/list/300?shelf=read", True),
         ("https://www.goodreads.com/user/show/1?param=value", False),
         ("https://www.goodreads.com/user/show/", False),
         ("https://www.goodreads.com/user", False),
@@ -157,6 +157,9 @@ def test_browser_setup(chrome_browser):
         ("https://www.goodreads.com/user/show/1 with space", False),
         ("https://www.goodreads.com/user/show/abc", False),
         ("https://www.goodreads.com/user/show/71341746-tamir-einhorn-salem", True),
+        ("https://www.goodreads.com/review/list/1?shelf=nonfiction", True),
+        ("https://www.goodreads.com/review/list/1?page=10&shelf=nonfiction", True),
+        ("https://www.goodreads.com/review/list/1", True)
     ],
 )
 def test_is_goodreads_shelf(url: str, expected: bool
