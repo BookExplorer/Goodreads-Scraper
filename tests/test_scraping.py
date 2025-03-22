@@ -54,6 +54,22 @@ def test_process_profile():
     for title in ["Les Visages", "O poderoso chefão"]:
         assert title in actual_titles
 
+@pytest.mark.integration
+def test_process_profile_with_shelf_url():
+    # Run the scraper
+    user_profile = "https://www.goodreads.com/review/list/71341746?shelf=read"
+    actual_results = process_profile(user_profile)
+
+    # Check if the number of books matches the expectation
+    assert len(actual_results) >= 300
+
+    # Verify that the known titles are in the actual results
+    actual_titles = [book["title"] for book in actual_results]
+
+    for title in ["Les Visages", "O poderoso chefão"]:
+        assert title in actual_titles
+
+
 
 @pytest.mark.integration
 def test_scrape_saved_shelf():
