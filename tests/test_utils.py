@@ -4,13 +4,13 @@ from goodreads_scraper.utils import (
     create_shelf_url,
     extract_hidden_td,
     extract_author_id,
-    is_goodreads_shelf
+    is_goodreads_shelf,
+    setup_browser
 )
 import pytest
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 import os
-from goodreads_scraper.utils import extract_hidden_td, setup_browser
 
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
@@ -108,7 +108,7 @@ def test_extract_hidden_td(chrome_browser):
 
     # Wait for the table to be present
     wait = WebDriverWait(chrome_browser, 10)
-    table = wait.until(EC.presence_of_element_located((By.TAG_NAME, "table")))
+    wait.until(EC.presence_of_element_located((By.TAG_NAME, "table")))
 
     # Find the first 'tr' element in the table
     row = chrome_browser.find_element(By.CSS_SELECTOR, "tr")
@@ -137,7 +137,7 @@ def test_extract_author_id(url, expected_id):
 
 
 def test_browser_setup(chrome_browser):
-    assert type(chrome_browser) == type(setup_browser())
+    assert type(chrome_browser) is type(setup_browser())
 
 @pytest.mark.parametrize(
     "url,expected",
