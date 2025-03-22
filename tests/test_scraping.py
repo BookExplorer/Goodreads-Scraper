@@ -57,8 +57,8 @@ def test_process_profile():
 @pytest.mark.integration
 def test_process_profile_with_shelf_url():
     # Run the scraper
-    user_profile = "https://www.goodreads.com/review/list/71341746?shelf=read"
-    actual_results = process_goodreads_url(user_profile)
+    url = "https://www.goodreads.com/review/list/71341746?shelf=read"
+    actual_results = process_goodreads_url(url)
 
     # Check if the number of books matches the expectation
     assert len(actual_results) >= 300
@@ -69,7 +69,11 @@ def test_process_profile_with_shelf_url():
     for title in ["Les Visages", "O poderoso chefão"]:
         assert title in actual_titles
 
-
+@pytest.mark.integration
+def test_process_profile_invalid_url():
+    url = "https://www.goodreads.com/book/show/17899167-o-quarto-de-jacob"
+    with pytest.raises(ValueError):
+        process_goodreads_url(url=url)
 
 @pytest.mark.integration
 def test_scrape_saved_shelf():
