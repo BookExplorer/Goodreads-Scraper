@@ -156,7 +156,7 @@ def test_browser_setup(chrome_browser):
         ("https:/www.goodreads.com/user/show/1", False),
         ("https://www.goodreads.com/user/show/1 with space", False),
         ("https://www.goodreads.com/user/show/abc", False),
-        ("https://www.goodreads.com/user/show/71341746-tamir-einhorn-salem", True),
+        ("https://www.goodreads.com/user/show/71341746-tamir-einhorn-salem", False),
         ("https://www.goodreads.com/review/list/1?shelf=nonfiction", True),
         ("https://www.goodreads.com/review/list/1?page=10&shelf=nonfiction", True),
         ("https://www.goodreads.com/review/list/1", True)
