@@ -1,7 +1,7 @@
 from goodreads_scraper.utils import (
     is_valid_goodreads_url,
     is_goodreads_profile,
-    create_shelf_url,
+    create_read_shelf_url,
     extract_hidden_td,
     extract_author_id,
     is_goodreads_shelf,
@@ -81,7 +81,7 @@ def test_profile_url(url: str, expected: bool):
     ],
 )
 def test_read_shelf_fetch(profile_url: str, expected: str):
-    assert create_shelf_url(profile_url=profile_url) == expected
+    assert create_read_shelf_url(profile_url=profile_url) == expected
 
 
 # Fixture to initialize WebDriver

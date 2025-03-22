@@ -61,7 +61,7 @@ def is_goodreads_profile(url: str) -> bool:
     return bool(re.match(pattern, url)) and is_valid_goodreads_url(url)
 
 
-def create_shelf_url(profile_url: str) -> str:
+def create_read_shelf_url(profile_url: str) -> str:
     """From a valid GR profile url, get the read shelf URL.
     Although this does work starting from the read shelf itself, it's better to just always use it with the user's profile.
     Some shelves will add the username to the URL itself, making this not ideal to work with. Keep it simple for now.
