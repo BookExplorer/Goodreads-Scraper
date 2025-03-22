@@ -1,15 +1,16 @@
 from goodreads_scraper.utils import (
     is_valid_goodreads_url,
     is_goodreads_profile,
-    create_shelf_url,
+    create_read_shelf_url,
     extract_hidden_td,
     extract_author_id,
+    is_goodreads_shelf,
+    setup_browser
 )
 import pytest
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 import os
-from goodreads_scraper.utils import extract_hidden_td, setup_browser
 
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
@@ -80,7 +81,7 @@ def test_profile_url(url: str, expected: bool):
     ],
 )
 def test_read_shelf_fetch(profile_url: str, expected: str):
-    assert create_shelf_url(profile_url=profile_url) == expected
+    assert create_read_shelf_url(profile_url=profile_url) == expected
 
 
 # Fixture to initialize WebDriver
@@ -107,7 +108,7 @@ def test_extract_hidden_td(chrome_browser):
 
     # Wait for the table to be present
     wait = WebDriverWait(chrome_browser, 10)
-    table = wait.until(EC.presence_of_element_located((By.TAG_NAME, "table")))
+    wait.until(EC.presence_of_element_located((By.TAG_NAME, "table")))
 
     # Find the first 'tr' element in the table
     row = chrome_browser.find_element(By.CSS_SELECTOR, "tr")
@@ -136,4 +137,31 @@ def test_extract_author_id(url, expected_id):
 
 
 def test_browser_setup(chrome_browser):
-    assert type(chrome_browser) == type(setup_browser())
+    assert type(chrome_browser) is type(setup_browser())
+
+@pytest.mark.parametrize(
+    "url,expected",
+    [
+        ("https://www.goodreads.com/book/show/12345", False),
+        ("https://www.example.com", False),
+        ("not a url", False),
+        ("https://www.goodreads.com/user/show/1", False),
+        ("https://www.goodreads.com/user/show/300", False),
+        ("https://www.goodreads.com/review/list/300?shelf=read", True),
+        ("https://www.goodreads.com/user/show/1?param=value", False),
+        ("https://www.goodreads.com/user/show/", False),
+        ("https://www.goodreads.com/user", False),
+        ("https://profile.goodreads.com/user/show/1", False),
+        ("https://www.goodreads.com/user/show/1#details", False),
+        ("https:/www.goodreads.com/user/show/1", False),
+        ("https://www.goodreads.com/user/show/1 with space", False),
+        ("https://www.goodreads.com/user/show/abc", False),
+        ("https://www.goodreads.com/user/show/71341746-tamir-einhorn-salem", False),
+        ("https://www.goodreads.com/review/list/1?shelf=nonfiction", True),
+        ("https://www.goodreads.com/review/list/1?page=10&shelf=nonfiction", True),
+        ("https://www.goodreads.com/review/list/1", True)
+    ],
+)
+def test_is_goodreads_shelf(url: str, expected: bool
+                            ) -> None:
+    assert is_goodreads_shelf(url) == expected

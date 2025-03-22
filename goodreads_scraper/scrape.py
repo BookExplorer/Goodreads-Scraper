@@ -1,7 +1,7 @@
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.common.by import By
 from goodreads_scraper.utils import (
-    create_shelf_url,
+    create_read_shelf_url,
     create_read_page,
     parse_infinite_status,
     setup_browser,
@@ -9,6 +9,7 @@ from goodreads_scraper.utils import (
     read_books_fast,
     page_wait,
     cleanup_birthplace,
+    is_goodreads_shelf
 )
 from selenium.webdriver.chrome.webdriver import WebDriver
 from selenium.webdriver.support.ui import WebDriverWait
@@ -93,7 +94,7 @@ def scrape_shelf(url: str) -> List[Dict[str, Any]]:
     return book_list
 
 
-def process_profile(user_profile: str) -> List[Dict[str, str]]:
+def process_goodreads_url(url: str) -> List[Dict[str, str]]:
     """Main function for the scraping.
     Will get a url, validate it as a GR profile and, if valid, create the shelf url to then be scraped.
     Returns the list of books in that shelf.
@@ -107,11 +108,12 @@ def process_profile(user_profile: str) -> List[Dict[str, str]]:
     Returns:
         List[Dict[str, str]]: List of dictionaries where each is a book extracted from the shelf and processed accordingly.
     """
-    valid_profile = is_goodreads_profile(user_profile)
-    if not valid_profile:
-        raise ValueError("Your URL was not a valid Goodreads profile.")
-    read_shelf_url = create_shelf_url(user_profile)
-    user_books = scrape_shelf(read_shelf_url)
+    valid_profile = is_goodreads_profile(url)
+    valid_shelf = is_goodreads_shelf(url)
+    if not valid_profile and not valid_shelf:
+        raise ValueError("Your URL was not a valid Goodreads URL to scrape.")
+    shelf_url = create_read_shelf_url(url) if not valid_shelf else url
+    user_books = scrape_shelf(shelf_url)
     return user_books
 
 
@@ -152,5 +154,5 @@ def scrape_gr_author(url: str) -> tuple[str | None, str | None]:
 
 if __name__ == "__main__":
     user_profile = "https://www.goodreads.com/user/show/71341746-tamir-einhorn-salem"
-    books = process_profile(user_profile)
+    books = process_goodreads_url(user_profile)
     print(books)

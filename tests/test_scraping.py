@@ -1,6 +1,6 @@
 import pytest
 from typing import Tuple
-from goodreads_scraper.scrape import scrape_shelf, process_profile, scrape_gr_author
+from goodreads_scraper.scrape import scrape_shelf, process_goodreads_url, scrape_gr_author
 from pathlib import Path
 
 fixture_path = Path(__file__).parent.joinpath("test_assets", "example_goodreads.html")
@@ -40,10 +40,10 @@ def test_scrape_live_shelf():
 
 
 @pytest.mark.integration
-def test_scrape_another_live_shelf():
+def test_process_profile():
     # Run the scraper
     user_profile = "https://www.goodreads.com/user/show/71341746-tamir-einhorn-salem"
-    actual_results = process_profile(user_profile)
+    actual_results = process_goodreads_url(user_profile)
 
     # Check if the number of books matches the expectation
     assert len(actual_results) >= 300
@@ -54,6 +54,26 @@ def test_scrape_another_live_shelf():
     for title in ["Les Visages", "O poderoso chefão"]:
         assert title in actual_titles
 
+@pytest.mark.integration
+def test_process_profile_with_shelf_url():
+    # Run the scraper
+    url = "https://www.goodreads.com/review/list/71341746?shelf=read"
+    actual_results = process_goodreads_url(url)
+
+    # Check if the number of books matches the expectation
+    assert len(actual_results) >= 300
+
+    # Verify that the known titles are in the actual results
+    actual_titles = [book["title"] for book in actual_results]
+
+    for title in ["Les Visages", "O poderoso chefão"]:
+        assert title in actual_titles
+
+@pytest.mark.integration
+def test_process_profile_invalid_url():
+    url = "https://www.goodreads.com/book/show/17899167-o-quarto-de-jacob"
+    with pytest.raises(ValueError):
+        process_goodreads_url(url=url)
 
 @pytest.mark.integration
 def test_scrape_saved_shelf():
