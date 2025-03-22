@@ -40,7 +40,7 @@ def test_scrape_live_shelf():
 
 
 @pytest.mark.integration
-def test_scrape_another_live_shelf():
+def test_process_profile():
     # Run the scraper
     user_profile = "https://www.goodreads.com/user/show/71341746-tamir-einhorn-salem"
     actual_results = process_profile(user_profile)
