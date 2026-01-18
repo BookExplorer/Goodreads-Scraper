@@ -46,7 +46,7 @@ def scroll_shelf(
         current_books, _ = parse_infinite_status(infinite_status)
 
 
-def scrape_shelf(url: str) -> List[Dict[str, Any]]:
+def scrape_shelf(url: str, debug: bool = False) -> List[Dict[str, Any]]:
     """Performs the extraction of all the books from a valid shelf URL.
 
     Args:
@@ -55,7 +55,7 @@ def scrape_shelf(url: str) -> List[Dict[str, Any]]:
     Returns:
         List[Dict[str, any]]: List of dictionaries where each is a book extracted from the shelf and processed accordingly.
     """
-    browser = setup_browser()
+    browser = setup_browser(debug=debug)
     browser.get(url)
 
     # Wait for initial load
