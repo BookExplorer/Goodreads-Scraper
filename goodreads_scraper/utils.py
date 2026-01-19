@@ -354,3 +354,16 @@ def read_cookies(browser: WebDriver) -> None:
     for cookie in cookies:
         browser.add_cookie(cookie)
     print(cookies)
+
+def login(browser: WebDriver) -> None:
+    browser.get('https://www.goodreads.com/user/sign_in')
+    login_modal = browser.find_element(By.XPATH, "//button[contains(text(), 'Sign in with email')]")
+    login_modal.click()
+    email_field = browser.find_element(By.XPATH,"//input[@type='email']")
+    email = os.environ['GR_LOGIN']
+    email_field.send_keys(email)
+    password_field = browser.find_element(By.XPATH,"//input[@type='password']")
+    password = os.environ['GR_PASSWORD']
+    password_field.send_keys(password)
+    submit_field = browser.find_element(By.XPATH,"//input[@type='submit']")
+    submit_field.click()
