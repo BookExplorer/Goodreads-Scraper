@@ -7,8 +7,8 @@ from goodreads_scraper.utils import (
     extract_author_id,
     is_goodreads_shelf,
     setup_browser,
-    login
 )
+from goodreads_scraper.auth import login
 import pytest
 from selenium import webdriver
 from selenium.webdriver.common.by import By

@@ -1,7 +1,6 @@
 from validators import url as url_validator
 from selenium.webdriver.chrome.webdriver import WebDriver
 import re
-import json
 from selenium.webdriver.common.by import By
 from urllib.parse import urlparse, urlunparse, ParseResult
 from typing import Dict, Tuple, List, Any
@@ -346,23 +345,3 @@ def is_goodreads_shelf(url: str) -> bool:
     pattern = r"^https:\/\/www\.goodreads\.com\/review\/list\/\d+.*$"
     return bool(re.match(pattern, url)) and is_valid_goodreads_url(url)
 
-
-
-def read_cookies(browser: WebDriver) -> None:
-    with open("login.json", 'r') as f:
-        cookies = json.load(f)
-    for cookie in cookies:
-        browser.add_cookie(cookie)
-
-def login(browser: WebDriver) -> None:
-    browser.get('https://www.goodreads.com/user/sign_in')
-    login_modal = browser.find_element(By.XPATH, "//button[contains(text(), 'Sign in with email')]")
-    login_modal.click()
-    email_field = browser.find_element(By.XPATH,"//input[@type='email']")
-    email = os.environ['GR_LOGIN']
-    email_field.send_keys(email)
-    password_field = browser.find_element(By.XPATH,"//input[@type='password']")
-    password = os.environ['GR_PASSWORD']
-    password_field.send_keys(password)
-    submit_field = browser.find_element(By.XPATH,"//input[@type='submit']")
-    submit_field.click()

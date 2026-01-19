@@ -10,9 +10,8 @@ from goodreads_scraper.utils import (
     page_wait,
     cleanup_birthplace,
     is_goodreads_shelf,
-    read_cookies,
-    login
 )
+from goodreads_scraper import auth
 from selenium.webdriver.chrome.webdriver import WebDriver
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
@@ -59,10 +58,7 @@ def scrape_shelf(url: str, debug: bool = False) -> List[Dict[str, Any]]:
     """
     browser = setup_browser(debug=debug)
     browser.get(url)
-    read_cookies(browser)
-    browser.get(url)
-    if 'sign_in' in browser.current_url:
-        login(browser)
+    auth.authenticate(browser, url)
     # Wait for initial load
     body = page_wait(browser)
     

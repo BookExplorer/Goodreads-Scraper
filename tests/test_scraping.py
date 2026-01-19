@@ -1,3 +1,4 @@
+from mypy.bogus_type import T
 import pytest
 from typing import Tuple
 from goodreads_scraper.scrape import scrape_shelf, process_goodreads_url, scrape_gr_author
@@ -28,7 +29,7 @@ EXPECTED_RESULTS = {
 @pytest.mark.integration
 def test_scrape_live_shelf():
     # Run the scraper
-    actual_results = scrape_shelf(TEST_URL)
+    actual_results = scrape_shelf(TEST_URL, debug=True)
 
     # Check if the number of books matches the expectation
     assert len(actual_results) == EXPECTED_RESULTS["number_of_books"]
