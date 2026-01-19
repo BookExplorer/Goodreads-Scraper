@@ -1,6 +1,7 @@
 from validators import url as url_validator
 from selenium.webdriver.chrome.webdriver import WebDriver
 import re
+import json
 from selenium.webdriver.common.by import By
 from urllib.parse import urlparse, urlunparse, ParseResult
 from typing import Dict, Tuple, List, Any
@@ -249,7 +250,7 @@ def setup_browser(debug: bool = True) -> WebDriver:
 
     chromedriver_autoinstaller.install(no_ssl=False)  # Check if the current version of chromedriver exists
     chrome_options = Options()
-    if debug:
+    if not debug:
         chrome_options.add_argument("--headless")
     chrome_options.add_argument("--window-size=1920,1080")
     chrome_options.add_argument("--no-sandbox")
@@ -344,3 +345,12 @@ def is_goodreads_shelf(url: str) -> bool:
     # A URL is a profile if it's a valid Goodreads URL and follows the Regex for having user/show/{USER_ID}-(username)
     pattern = r"^https:\/\/www\.goodreads\.com\/review\/list\/\d+.*$"
     return bool(re.match(pattern, url)) and is_valid_goodreads_url(url)
+
+
+
+def read_cookies(browser: WebDriver) -> None:
+    with open("login.json", 'r') as f:
+        cookies = json.load(f)
+    for cookie in cookies:
+        browser.add_cookie(cookie)
+    print(cookies)

@@ -9,7 +9,8 @@ from goodreads_scraper.utils import (
     read_books_fast,
     page_wait,
     cleanup_birthplace,
-    is_goodreads_shelf
+    is_goodreads_shelf,
+    read_cookies
 )
 from selenium.webdriver.chrome.webdriver import WebDriver
 from selenium.webdriver.support.ui import WebDriverWait
@@ -57,10 +58,11 @@ def scrape_shelf(url: str, debug: bool = False) -> List[Dict[str, Any]]:
     """
     browser = setup_browser(debug=debug)
     browser.get(url)
-
+    read_cookies(browser)
+    browser.get(url)
     # Wait for initial load
     body = page_wait(browser)
-
+    
     # Wait for the infinite status
     try:
         infinite_status = WebDriverWait(browser, 5).until(
