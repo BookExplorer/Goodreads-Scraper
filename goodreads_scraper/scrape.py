@@ -9,8 +9,9 @@ from goodreads_scraper.utils import (
     read_books_fast,
     page_wait,
     cleanup_birthplace,
-    is_goodreads_shelf
+    is_goodreads_shelf,
 )
+from goodreads_scraper import auth
 from selenium.webdriver.chrome.webdriver import WebDriver
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
@@ -46,7 +47,7 @@ def scroll_shelf(
         current_books, _ = parse_infinite_status(infinite_status)
 
 
-def scrape_shelf(url: str) -> List[Dict[str, Any]]:
+def scrape_shelf(url: str, debug: bool = False) -> List[Dict[str, Any]]:
     """Performs the extraction of all the books from a valid shelf URL.
 
     Args:
@@ -55,12 +56,12 @@ def scrape_shelf(url: str) -> List[Dict[str, Any]]:
     Returns:
         List[Dict[str, any]]: List of dictionaries where each is a book extracted from the shelf and processed accordingly.
     """
-    browser = setup_browser()
+    browser = setup_browser(debug=debug)
     browser.get(url)
-
+    auth.authenticate(browser, url)
     # Wait for initial load
     body = page_wait(browser)
-
+    
     # Wait for the infinite status
     try:
         infinite_status = WebDriverWait(browser, 5).until(
@@ -130,7 +131,6 @@ def scrape_gr_author(url: str) -> tuple[str | None, str | None]:
     browser = setup_browser()
 
     browser.get(url)
-
     WebDriverWait(browser, 10).until(
         EC.presence_of_element_located((By.TAG_NAME, "body"))
     )
