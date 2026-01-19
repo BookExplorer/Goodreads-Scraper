@@ -131,7 +131,6 @@ def scrape_gr_author(url: str) -> tuple[str | None, str | None]:
     browser = setup_browser()
 
     browser.get(url)
-
     WebDriverWait(browser, 10).until(
         EC.presence_of_element_located((By.TAG_NAME, "body"))
     )
