@@ -353,7 +353,6 @@ def read_cookies(browser: WebDriver) -> None:
         cookies = json.load(f)
     for cookie in cookies:
         browser.add_cookie(cookie)
-    print(cookies)
 
 def login(browser: WebDriver) -> None:
     browser.get('https://www.goodreads.com/user/sign_in')

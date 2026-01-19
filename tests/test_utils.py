@@ -1,3 +1,4 @@
+from selenium.webdriver.chrome.webdriver import WebDriver
 from goodreads_scraper.utils import (
     is_valid_goodreads_url,
     is_goodreads_profile,
@@ -5,7 +6,8 @@ from goodreads_scraper.utils import (
     extract_hidden_td,
     extract_author_id,
     is_goodreads_shelf,
-    setup_browser
+    setup_browser,
+    login
 )
 import pytest
 from selenium import webdriver
@@ -88,15 +90,19 @@ def test_read_shelf_fetch(profile_url: str, expected: str):
 @pytest.fixture
 def chrome_browser():
     chrome_options = Options()
-    chrome_options.add_argument("--headless")
+    #chrome_options.add_argument("--headless")
     chrome_options.add_argument("--window-size=1920,1080")
+    chrome_options.add_argument("--no-sandbox")
+    chrome_options.add_argument(
+        "--user-agent='Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36'"
+    )
     driver = webdriver.Chrome(options=chrome_options)
     yield driver
     driver.quit()
 
 
 # Test function
-def test_extract_hidden_td(chrome_browser):
+def test_extract_hidden_td(chrome_browser: WebDriver):
     # Replace with the actual path to your test HTML file
     current_script_dir = os.path.dirname(os.path.realpath(__file__))
 
@@ -136,7 +142,7 @@ def test_extract_author_id(url, expected_id):
     assert extract_author_id(url) == expected_id
 
 
-def test_browser_setup(chrome_browser):
+def test_browser_setup(chrome_browser: WebDriver):
     assert type(chrome_browser) is type(setup_browser())
 
 @pytest.mark.parametrize(
@@ -165,3 +171,20 @@ def test_browser_setup(chrome_browser):
 def test_is_goodreads_shelf(url: str, expected: bool
                             ) -> None:
     assert is_goodreads_shelf(url) == expected
+
+
+
+def test_login(chrome_browser: WebDriver) -> None:
+    WebDriverWait(chrome_browser, 30).until(
+        lambda d: d.execute_script("return document.readyState") == "complete"
+    )
+    WebDriverWait(chrome_browser, 10).until(
+        EC.presence_of_element_located((By.TAG_NAME, "body"))
+    )
+    login(chrome_browser)
+    WebDriverWait(chrome_browser, 300).until(
+        EC.presence_of_element_located((By.TAG_NAME, "body"))
+    )
+    assert len(chrome_browser.find_elements(By.XPATH, "//button[contains(text(), 'Sign in with email')]")) == 0
+    assert len(chrome_browser.find_elements(By.XPATH, "//a[contains(text(), 'My Books')]")) > 0
+    # TODO: How can I be sure this still works? What is the certainty I have?
