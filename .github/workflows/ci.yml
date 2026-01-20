@@ -18,13 +18,11 @@ jobs:
         with:
           python-version: "3.10"
 
-      - name: Install Poetry
-        uses: snok/install-poetry@v1.2
-        with:
-          version: "1.7.1"
+      - name: Install uv
+        uses: astral-sh/setup-uv@v7
 
       - name: Install dependencies
-        run: poetry install
+        run: uv sync
 
       - name: Set up Chrome
         uses: browser-actions/setup-chrome@v1
@@ -32,4 +30,4 @@ jobs:
           chrome-version: "latest"
 
       - name: Run tests
-        run: poetry run pytest
+        run: uv run pytest
