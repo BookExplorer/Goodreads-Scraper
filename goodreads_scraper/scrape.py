@@ -149,6 +149,7 @@ def scrape_gr_author(url: str) -> tuple[str | None, str | None]:
     except TimeoutException:
         birthplace = None
     # Returns birthplace and country of birth.
+    browser.quit()
     return birthplace, cleanup_birthplace(birthplace)
 
 
