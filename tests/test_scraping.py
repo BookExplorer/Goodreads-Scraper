@@ -1,4 +1,3 @@
-from mypy.bogus_type import T
 import pytest
 from typing import Tuple
 from goodreads_scraper.scrape import scrape_shelf, process_goodreads_url, scrape_gr_author
@@ -36,7 +35,7 @@ def test_scrape_live_shelf():
 
     # Verify that the known titles are in the actual results
     actual_titles = [book["title"] for book in actual_results]
-    for title in EXPECTED_RESULTS["known_titles"]:
+    for title in EXPECTED_RESULTS["known_titles"]: #type: ignore
         assert title in actual_titles
 
 
@@ -88,7 +87,7 @@ def test_scrape_saved_shelf():
 
     # Verify that the known titles are in the actual results
     actual_titles = [book["title"] for book in actual_results]
-    for title in EXPECTED_RESULTS["known_titles"]:
+    for title in EXPECTED_RESULTS["known_titles"]: #type: ignore
         assert title in actual_titles
 
 
