@@ -239,7 +239,7 @@ def parse_infinite_status(infinite_status: WebElement) -> Tuple[int, int]:
     return current_books, remaining_books
 
 
-def setup_browser(debug: bool = True) -> WebDriver:
+def setup_browser(debug: bool = False) -> WebDriver:
     """Handles setup of the browser. For now, it's a Chrome Browser.
     TODO: Perhaps this could be dynamical?
 
