@@ -10,6 +10,7 @@ from goodreads_scraper.utils import (
     page_wait,
     cleanup_birthplace,
     is_goodreads_shelf,
+    read_books_from_html
 )
 from goodreads_scraper import auth
 from selenium.webdriver.chrome.webdriver import WebDriver
@@ -21,6 +22,8 @@ from typing import Dict, List, Any
 import re
 from logger import logger
 import time
+from concurrent.futures import as_completed
+from requests_futures.sessions import FuturesSession
 
 def scroll_shelf(
     infinite_status: WebElement, body: WebElement, browser: WebDriver
@@ -47,27 +50,22 @@ def scroll_shelf(
         current_books, _ = parse_infinite_status(infinite_status)
 
 
+
 def scrape_shelf(url: str, debug: bool = False) -> List[Dict[str, Any]]:
-    """Performs the extraction of all the books from a valid shelf URL.
-
-    Args:
-        url (str): Valid URL for a shelf.
-
-    Returns:
-        List[Dict[str, any]]: List of dictionaries where each is a book extracted from the shelf and processed accordingly.
-    """
+    """Performs the extraction of all the books from a valid shelf URL."""
     t0 = time.time()
     browser = setup_browser(debug=debug)
     print(f"setup_browser: {time.time()-t0:.2f}s", flush=True)
+
     t1 = time.time()
     browser.get(url)
     auth.authenticate(browser, url)
     print(f"auth: {time.time()-t1:.2f}s", flush=True)
-    # Wait for initial load
+
     t2 = time.time()
     body = page_wait(browser)
     print(f"page_wait: {time.time()-t2:.2f}s", flush=True)
-    # Wait for the infinite status
+
     t3 = time.time()
     try:
         infinite_status = WebDriverWait(browser, 5).until(
@@ -78,42 +76,60 @@ def scrape_shelf(url: str, debug: bool = False) -> List[Dict[str, Any]]:
         logger.debug("Infinite status timeout.")
         infinite_status_text = None
     print(f"infinite status wait: {time.time()-t3:.2f}s", flush=True)
-    if infinite_status_text:  # If there is text, the scroll will work.
+
+    if infinite_status_text:
         t4 = time.time()
         scroll_shelf(infinite_status, body, browser)
         print(f"scroll shelf: {time.time()-t4:.2f}s", flush=True)
         t5 = time.time()
         book_list = read_books_fast(browser)
         print(f"read fast: {time.time()-t5:.2f}s", flush=True)
-    else:
-        t5 = time.time()
-        book_list = read_books_fast(browser)
-        print(f"read fast: {time.time()-t5:.2f}s", flush=True)
-        try:
-            t6 = time.time() 
-            pagination = WebDriverWait(browser, 10).until(
-                EC.presence_of_element_located((By.ID, "reviewPagination"))
-            )
-            print(f"find page: {time.time()-t6:.2f}s", flush=True)
-            next_pages = pagination.find_elements(By.CSS_SELECTOR, "a")
-            max_page = int(next_pages[-2].text)
-            t7 = time.time()
-            for i in range(2, max_page + 1):
-                t8 = time.time()
-                new_url = create_read_page(url, i)
-                print(f"create page {i}: {time.time()-t8:.2f}s", flush=True)
-                browser.get(new_url)
-                body = page_wait(browser)
-                book_list += read_books_fast(browser)
-                print(f"read page {i}: {time.time()-t8:.2f}s", flush=True)
-            print(f"page loop: {time.time()-t7:.2f}s", flush=True)
-        except TimeoutException:
-            logger.debug("No pagination, single page shelf.")
-        # Aí você processa cada página e vai adicionando.
-    browser.quit()
+        browser.quit()
+        print(f"total: {time.time()-t0:.2f}s", flush=True)
+        return book_list
+
+    t5 = time.time()
+    book_list = read_books_fast(browser)
+    print(f"read fast (page 1): {time.time()-t5:.2f}s", flush=True)
+
+    try:
+        t6 = time.time()
+        pagination = WebDriverWait(browser, 10).until(
+            EC.presence_of_element_located((By.ID, "reviewPagination"))
+        )
+        next_pages = pagination.find_elements(By.CSS_SELECTOR, "a")
+        max_page = int(next_pages[-2].text)
+        print(f"find pagination: {time.time()-t6:.2f}s", flush=True)
+    except TimeoutException:
+        logger.debug("No pagination, single page shelf.")
+        browser.quit()
+        print(f"total: {time.time()-t0:.2f}s", flush=True)
+        return book_list
+
+    t7 = time.time()
+
+    print(f"build session + quit browser: {time.time()-t7:.2f}s", flush=True)
+    t8 = time.time()
+    read_pages = [create_read_page(url, i) for i in range(2, max_page+1)]
+    with FuturesSession() as session:
+        session.headers.update({
+        "User-Agent": browser.execute_script("return navigator.userAgent;"),
+        "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+        "Accept-Language": "en-US,en;q=0.9",
+    })
+        for cookie in browser.get_cookies():
+            session.cookies.set(cookie["name"], cookie["value"])
+        browser.quit()
+        futures = [session.get(read_page) for read_page in read_pages]
+        for future in as_completed(futures):
+            response = future.result()
+            response.raise_for_status()
+            parsed = read_books_from_html(response.text)
+            book_list += parsed
+    print(f"page loop: {time.time()-t8:.2f}s", flush=True)
+
     print(f"total: {time.time()-t0:.2f}s", flush=True)
     return book_list
-
 
 def process_goodreads_url(url: str) -> List[Dict[str, str]]:
     """Main function for the scraping.
@@ -136,6 +152,8 @@ def process_goodreads_url(url: str) -> List[Dict[str, str]]:
     shelf_url = create_read_shelf_url(url) if not valid_shelf else url
     user_books = scrape_shelf(shelf_url)
     return user_books
+
+
 
 
 def scrape_gr_author(url: str) -> tuple[str | None, str | None]:
