@@ -19,6 +19,7 @@ dependencies = [
     "validators>=0.22.0,<0.23",
     "selenium>=4.15.2,<5",
     "chromedriver-autoinstaller>=0.6.4,<0.7",
+    "requests-futures>=1.0.2",
 ]
 
 [dependency-groups]

@@ -168,6 +168,7 @@ dependencies = [
     { name = "beautifulsoup4" },
     { name = "chromedriver-autoinstaller" },
     { name = "requests" },
+    { name = "requests-futures" },
     { name = "selenium" },
     { name = "validators" },
 ]
@@ -184,6 +185,7 @@ requires-dist = [
     { name = "beautifulsoup4", specifier = ">=4.12.2,<5" },
     { name = "chromedriver-autoinstaller", specifier = ">=0.6.4,<0.7" },
     { name = "requests", specifier = ">=2.31.0,<3" },
+    { name = "requests-futures", specifier = ">=1.0.2" },
     { name = "selenium", specifier = ">=4.15.2,<5" },
     { name = "validators", specifier = ">=0.22.0,<0.23" },
 ]
@@ -415,6 +417,18 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/9d/be/10918a2eac4ae9f02f6cfe6414b7a155ccd8f7f9d4380d62fd5b955065c3/requests-2.31.0.tar.gz", hash = "sha256:942c5a758f98d790eaed1a29cb6eefc7ffb0d1cf7af05c3d2791656dbd6ad1e1", size = 110794, upload-time = "2023-05-22T15:12:44.175Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/70/8e/0e2d847013cb52cd35b38c009bb167a1a26b2ce6cd6965bf26b47bc0bf44/requests-2.31.0-py3-none-any.whl", hash = "sha256:58cd2187c01e70e6e26505bca751777aa9f2ee0b7f4300988b709f44e013003f", size = 62574, upload-time = "2023-05-22T15:12:42.313Z" },
+]
+
+[[package]]
+name = "requests-futures"
+version = "1.0.2"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "requests" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/88/f8/175b823241536ba09da033850d66194c372c65c38804847ac9cef0239542/requests_futures-1.0.2.tar.gz", hash = "sha256:6b7eb57940336e800faebc3dab506360edec9478f7b22dc570858ad3aa7458da", size = 10356, upload-time = "2024-11-15T22:14:51.988Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/91/23/7c1096731c15c83826cb0dd42078b561a838aed44c36f370aeb815168106/requests_futures-1.0.2-py2.py3-none-any.whl", hash = "sha256:a3534af7c2bf670cd7aa730716e9e7d4386497554f87792be7514063b8912897", size = 7671, upload-time = "2024-11-15T22:14:50.255Z" },
 ]
 
 [[package]]
