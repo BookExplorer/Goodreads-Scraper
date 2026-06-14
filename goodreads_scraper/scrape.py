@@ -20,7 +20,7 @@ from selenium.common.exceptions import TimeoutException
 from typing import Dict, List, Any
 import re
 from logger import logger
-
+import time
 
 def scroll_shelf(
     infinite_status: WebElement, body: WebElement, browser: WebDriver
@@ -56,13 +56,19 @@ def scrape_shelf(url: str, debug: bool = False) -> List[Dict[str, Any]]:
     Returns:
         List[Dict[str, any]]: List of dictionaries where each is a book extracted from the shelf and processed accordingly.
     """
+    t0 = time.time()
     browser = setup_browser(debug=debug)
+    print(f"setup_browser: {time.time()-t0:.2f}s", flush=True)
+    t1 = time.time()
     browser.get(url)
     auth.authenticate(browser, url)
+    print(f"auth: {time.time()-t1:.2f}s", flush=True)
     # Wait for initial load
+    t2 = time.time()
     body = page_wait(browser)
-    
+    print(f"page_wait: {time.time()-t2:.2f}s", flush=True)
     # Wait for the infinite status
+    t3 = time.time()
     try:
         infinite_status = WebDriverWait(browser, 5).until(
             EC.presence_of_element_located((By.ID, "infiniteStatus"))
@@ -71,27 +77,41 @@ def scrape_shelf(url: str, debug: bool = False) -> List[Dict[str, Any]]:
     except TimeoutException:
         logger.debug("Infinite status timeout.")
         infinite_status_text = None
+    print(f"infinite status wait: {time.time()-t3:.2f}s", flush=True)
     if infinite_status_text:  # If there is text, the scroll will work.
+        t4 = time.time()
         scroll_shelf(infinite_status, body, browser)
+        print(f"scroll shelf: {time.time()-t4:.2f}s", flush=True)
+        t5 = time.time()
         book_list = read_books_fast(browser)
+        print(f"read fast: {time.time()-t5:.2f}s", flush=True)
     else:
+        t5 = time.time()
         book_list = read_books_fast(browser)
+        print(f"read fast: {time.time()-t5:.2f}s", flush=True)
         try:
+            t6 = time.time() 
             pagination = WebDriverWait(browser, 10).until(
                 EC.presence_of_element_located((By.ID, "reviewPagination"))
             )
+            print(f"find page: {time.time()-t6:.2f}s", flush=True)
             next_pages = pagination.find_elements(By.CSS_SELECTOR, "a")
             max_page = int(next_pages[-2].text)
-
+            t7 = time.time()
             for i in range(2, max_page + 1):
+                t8 = time.time()
                 new_url = create_read_page(url, i)
+                print(f"create page {i}: {time.time()-t8:.2f}s", flush=True)
                 browser.get(new_url)
                 body = page_wait(browser)
                 book_list += read_books_fast(browser)
+                print(f"read page {i}: {time.time()-t8:.2f}s", flush=True)
+            print(f"page loop: {time.time()-t7:.2f}s", flush=True)
         except TimeoutException:
             logger.debug("No pagination, single page shelf.")
         # Aí você processa cada página e vai adicionando.
     browser.quit()
+    print(f"total: {time.time()-t0:.2f}s", flush=True)
     return book_list
 
 

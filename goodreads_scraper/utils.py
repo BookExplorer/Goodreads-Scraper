@@ -11,6 +11,7 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium import webdriver
 import chromedriver_autoinstaller
 import os
+from bs4 import BeautifulSoup
 
 # and if it doesn't exist, download it automatically,
 # then add chromedriver to path
@@ -345,3 +346,48 @@ def is_goodreads_shelf(url: str) -> bool:
     pattern = r"^https:\/\/www\.goodreads\.com\/review\/list\/\d+.*$"
     return bool(re.match(pattern, url)) and is_valid_goodreads_url(url)
 
+
+def read_books_from_html(html: str) -> List[Dict[str, Any]]:
+    soup = BeautifulSoup(html, "html.parser")
+    books = []
+    for book in soup.select("tr.bookalike"):
+        data: Dict[str, Any] = {}
+
+        def field_text(selector: str) -> str:
+            el = book.select_one(selector)
+            return el.get_text(strip=True) if el else ""
+
+        data["isbn"] = field_text("td.field.isbn div.value")
+        data["isbn13"] = field_text("td.field.isbn13 div.value")
+        title_el = book.select_one("td.field.title")
+        data["title"] = (
+            re.sub(r"^title\s+|\s\s+", " ", title_el.get_text(" ", strip=True)).strip()
+            if title_el
+            else ""
+        )
+
+        author = book.select_one("td.field.author div.value a")
+        data["author_name"] = author.get_text(strip=True) if author else ""
+        data["author_link"] = (
+            "https://www.goodreads.com" + author["href"] if author else ""
+        )
+
+        avg = field_text("td.field.avg_rating div.value")
+        data["avg_rating"] = float(avg) if avg else None
+
+        data["user_rating"] = field_text("td.field.rating")
+
+        pages = field_text("td.field.num_pages div.value")
+        data["num_pages"] = int(pages.replace(",", "")) if pages.isdigit() else None
+
+        data["publishing_date"] = field_text("td.field.date_pub div.value")
+        data["started_date"] = field_text("td.field.date_started div.value")
+        data["finished_date"] = field_text("td.field.date_read div.value")
+        data["added_date"] = field_text("td.field.date_added div.value")
+
+        match = re.search(r"/author/show/(\d+)", data["author_link"])
+        data["author_id"] = int(match.group(1)) if match else None
+
+        books.append(data)
+
+    return books
