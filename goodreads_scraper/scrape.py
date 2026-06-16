@@ -24,7 +24,9 @@ from logger import logger
 import time
 from concurrent.futures import as_completed
 from requests_futures.sessions import FuturesSession
-
+import requests
+from bs4 import BeautifulSoup
+from lxml import etree # type: ignore
 def scroll_shelf(
     infinite_status: WebElement, body: WebElement, browser: WebDriver
 ) -> None:
@@ -165,29 +167,15 @@ def scrape_gr_author(url: str) -> tuple[str | None, str | None]:
     Returns:
         str | None: Birthplace of the author or None if we can't find it in the authors page.
     """
-
-    browser = setup_browser()
-
-    browser.get(url)
-    WebDriverWait(browser, 10).until(
-        EC.presence_of_element_located((By.TAG_NAME, "body"))
-    )
-    try:
-        born_label = WebDriverWait(browser, 10).until(
-            EC.presence_of_element_located(
-                (By.XPATH, "//div[@class='dataTitle' and text()='Born']")
-            )
-        )
-
-        raw_birthplace = browser.execute_script(
-            "return arguments[0].nextSibling.textContent.trim();", born_label
-        )
-
+    r = requests.get(url, headers={"User-Agent": "Mozilla/5.0"})
+    soup = BeautifulSoup(r.content, 'html.parser')
+    dom = etree.HTML(str(soup))
+    selector = dom.xpath("//div[@class='dataTitle' and text()='Born']/following-sibling::text()")
+    if len(selector) > 0:
+        raw_birthplace = selector[0].strip()
         birthplace = re.sub(r"^in\s+", "", raw_birthplace)
-    except TimeoutException:
+    else:
         birthplace = None
-    # Returns birthplace and country of birth.
-    browser.quit()
     return birthplace, cleanup_birthplace(birthplace)
 
 
