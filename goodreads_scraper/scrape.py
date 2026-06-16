@@ -178,8 +178,3 @@ def scrape_gr_author(url: str) -> tuple[str | None, str | None]:
         birthplace = None
     return birthplace, cleanup_birthplace(birthplace)
 
-
-if __name__ == "__main__":
-    user_profile = "https://www.goodreads.com/user/show/71341746-tamir-einhorn-salem"
-    books = process_goodreads_url(user_profile)
-    print(books)
