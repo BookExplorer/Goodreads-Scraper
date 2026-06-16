@@ -111,7 +111,7 @@ def scrape_shelf(url: str, debug: bool = False) -> List[Dict[str, Any]]:
     print(f"build session + quit browser: {time.time()-t7:.2f}s", flush=True)
     t8 = time.time()
     read_pages = [create_read_page(url, i) for i in range(2, max_page+1)]
-    with FuturesSession() as session:
+    with FuturesSession(max_workers=8) as session:
         session.headers.update({
         "User-Agent": browser.execute_script("return navigator.userAgent;"),
         "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
